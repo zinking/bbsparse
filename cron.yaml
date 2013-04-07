@@ -1,0 +1,16 @@
+cron:
+- description: refresh content TASK1
+  url: /content/management/cron/
+  schedule: every 90 minutes    
+  
+- description: refresh content TASK2
+  url: /content/management/cron/
+  schedule: every 91 minutes
+  
+- description: refresh content TASK3
+  url: /content/management/cron/
+  schedule: every 92 minutes
+  
+
+
+

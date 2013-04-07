@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml"><head>
+	<title>
+	{% block title %}{% endblock%} / 校园里没有新鲜事
+    </title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf8">
+	<meta name="description" content=" News Feed of Campus in China">
+	<meta name="keywords" content="bbs china campus top 10">
+
+	<link rel="stylesheet" type="text/css" href="/media/css/combined-content.css" />
+	<script type="text/javascript" src="/media/js/combined-en.js"></script>
+    <script type="text/javascript" src="/media/js/combined-content.js"></script>
+    {% block head %}{% endblock%}
+    
+    <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        try {
+        var pageTracker = _gat._getTracker("UA-3272874-2");
+        pageTracker._trackPageview();
+        } catch(err) {}
+    </script>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+            $("#searchbox").click( function(){
+                if( $(this).val() == "搜索标签" )
+                    $(this).val("");
+            })
+            $("#searchbox").keydown(function(event){
+              switch(event.keyCode) {
+                case 13:
+                    if( $("#searchbox").val() == "" ) return;
+                    if( $("#searchbox").val() == "十大收录" ) return;
+                    $("#searchform").submit();
+                break;
+              }
+            }); 
+		});
+        {% block js %}{% endblock%}
+	</script>
+</head>
+<body class="">
+<div id="header-wrapper">
+<div id="header-loggedin">
+    <a href="/"><img src="/media/images/blogo.png" alt="BbsTopTen" id="header-wrapper-logo" title="十大首页"></a>					
+    <a href=""><img src="/media/images/small_logo.png" id="userimage" alt=""></a>
+<div id="header-nav">
+<ul><li><a href="/">Home</a></li>
+<li class="has-dropdown">
+<a href="/content/list/0/">List View</a> 
+<ul style="">
+<li><a href="">By School</a> </li>
+<li class="header-nav-repo-button-new"><a href="/">By Links</a></li>
+<li class="header-nav-repo-segmenter-theirs">By Recommend</li></ul></li>
+
+<li><a href=" url viewaccount ">Account</a></li>
+<li><a href=" url mgmthome ">Mgmt</a></li>
+<li style="display:none"><a href="" class="inbox-no-messages">Inbox</a></li>
+<li><a href="/" style="display:none">Plans</a></li>
+<li><a href="/">Help</a></li>
+  
+  <!-- <li style=""><a href=" google_logout_url ">Log out Google <small> user.email </small></a></li> -->
+  
+  <li style=""><a href=" google_login_url ">Log in</a></li>
+
+<li id="topsearch"><form id="searchform" action=" url postsearchlist" method="POST">
+<input id="searchbox" name="tagname" type="text" value="搜索标签"></form></li></ul>
+</div></div></div>
+
+
+<div id="content-wrapper">
+	<div class="container"><div style="width:100%; margin-bottom:30px;">
+    <DIV class=featured >
+    <IMG alt=featured src="/media/images/featured.png"> 
+    <div  class="ad" style="width:934px;height:91px;">
+      <!--   load adtags 
+         "admap"|adcontent 
+       <img  src="url adsystem_pic?id=adgrid" usemap="#AV-eggs" > -->
+     <a href="http://i-oo-i.appspot.com"><img  src="/media/images/adgridxn.jpg" usemap="#AV-eggs"  ></a>
+    </div></DIV></div>
+{% block content %}{% endblock%}</div>
+<div class="cb"></div>
+<div class="cb footer-placeholder"></div></div>
+
+<div id="footer-wrapper"><div id="footer">
+    <a href="{% url view_parsing_status%}">SiteStauts</a><small style="color:red;" >new!</small> | 
+    <a href="/">Privacy Policy</a> | 
+    <a href="http://great-way.appspot.com/">Blog</a> | 
+    <a href="http://code.google.com/p/bgweb/issues/list">Report Bug</a> | 
+    <a href="http://code.google.com/p/bgweb/w/list">Discuss</a> | 
+    <a href="/">2010-2011</a>| We run <small><b>
+<a href="http://www.djangoproject.com/">Django 1.1.0</a> / 
+<a href="http://code.google.com/appengine/">Google App Engine</a> / 
+<a href="http://code.google.com/p/app-engine-patch/ ">App Engine Patch</a> / 
+<a href="http://www.python.org/">Python 2.5.2</a> /r2710</b></small>
+</div></div>
+</body>
+</html>

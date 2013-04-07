@@ -1,0 +1,44 @@
+
+<html>
+<title></title>
+
+<body>
+<div class="grid" align="center" >
+<ul>
+{% for table in col1 %}
+
+    <li>
+    <div class="bbs_block" >
+        <!-- <img style="width:130;height:60;" src="/page/images/logo/logo_{{ table.name }}.jpg"/> -->
+        <br />
+        <b>{{ table.chinesename }}-{{ table.schoolchinesename }}</b>
+
+                <table >
+
+                    {% for item in table.itemlist %}
+                        {% if forloop.counter|divisibleby:2 %}
+                        <tr class="pt9lc">
+                        {% else %}
+                        <tr class="pt9dc">
+                        {% endif %} 
+                            
+                            <td nowrap="nowrap" style="width:20%" class=board>
+                            <a href="{{item.boardlink}}" target=_blank><b>{{item.board}}</b></a></td>
+                            <td nowrap="nowrap" style="width:80%" class=title>
+                            <a href="{{item.titlelink}}" target=_blank><b>{{item.title}}</b></a></td>
+                            
+                        </tr>                                          
+
+                    {% endfor %}
+                </table>
+                 
+    </div>
+    </li>
+   
+    
+       {% endfor %}  
+       </ul>
+</div>
+
+</body>
+</html>

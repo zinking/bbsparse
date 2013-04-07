@@ -1,0 +1,6 @@
+{% if error %}
+{% else %}
+{% for cmt in comments %}
+<div> {{cmt.body}} </div>
+{% endfor %}
+{% endif %}

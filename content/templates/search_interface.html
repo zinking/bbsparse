@@ -1,0 +1,107 @@
+{% extends "base-template.html" %}
+     {% block title %}搜索{% endblock%}   
+       
+
+       
+  {% block content %}  
+
+
+{% if has_error %}
+
+<form id="admin"   name="f" style="">       
+            <fieldset>
+                <legend>提示信息</legend>
+                <p>{{info}}</p>        
+            </fieldset>
+          
+            <fieldset style="height:400px">               
+            </fieldset>        
+</form>
+
+{% else %}     
+  
+<ul id="pagination-digg">
+    {% if has_previous %}
+        <li class="previous"><a href="/content/list/{{previous_page}}/">«Previous</a></li>
+    {% else %}
+        <li class="previous-off">«Previous</li>
+    {% endif %}
+    
+    {% for page in page_range %}
+        {% ifequal page current_page %}
+            <li class="active">{{page}}</li>
+        {% else %}
+            <li><a href="/content/list/{{page}}/">{{page}}</a></li>
+        {% endifequal %}
+    {% endfor %}
+    
+    {% if has_next %}
+        <li class="next"><a href="/content/list/{{next_page}}/">Next »</a></li>
+    {% else %}
+        <li class="next-off">Next »</li>
+    {% endif %}
+</ul> 
+
+    {% load timeagofilter  %}
+
+    <table class="tees">
+    {% for link in linklist %}
+    <tr class="tee-summary" id="tee1">
+    <td > <!--条头-->
+      <div class="xx_c">
+        <div class="vote_c" title="被看了{{link.visitcount}}次">{{link.visitcount}}<span class="xx_unit">访问</span></div>
+        <div class="ans_c" title="{{link.commentcount}}条评论">{{link.commentcount}}<span class="xx_unit">评论</span></div>
+      </div>
+      <div class="fav_view" title="共{{link.supportcount}}次顶起,共{{link.objectcount}}次踩下">{{link.supportcount}}顶/{{link.objectcount}}踩</div>
+    </td>
+    <td style="padding-left:40px;">
+      <div class="tee_tinfo">
+        <h3><a href="{% url content_framed_detail %}?linkid={{link.id}}" title="{{link.title}}" target=_blank>{{link.pschool.chinesename}}---{{link.board}}</a><br/></h3>
+        <div class="tee_desc">
+          {{link.title}}
+        </div>
+      </div>
+      <div class="tee_tags">
+          {% for tag in link.tags%}
+            <a class="tag" href="TBD">{{tag}}</a>
+          {% endfor %}
+          
+      </div></div>
+    </td>
+    <td style="padding:10 10 10 10">
+    <div class="tee_uinfo" style="padding-top:15px; padding-left:15px;">
+        <span><a href=""><img src="" width="40" height="40" /></a></span>
+        <span class="timeago’" title="{{link.createtime}}"> {{ link.createtime|timeago }} ago<br/>
+        <a href="/tiku/user/5/">{{link.source}}--{{link.author}} </a></span>
+      </div>
+    </td>
+  </tr>
+  {% endfor %}
+  </table>
+  
+  
+<ul id="pagination-digg">
+    {% if has_previous %}
+        <li class="previous"><a href="/content/list/{{previous_page}}/">«Previous</a></li>
+    {% else %}
+        <li class="previous-off">«Previous</li>
+    {% endif %}
+    
+    {% for page in page_range %}
+        {% ifequal page current_page %}
+            <li class="active">{{page}}</li>
+        {% else %}
+            <li><a href="/content/list/{{page}}/">{{page}}</a></li>
+        {% endifequal %}
+    {% endfor %}
+    
+    {% if has_next %}
+        <li class="next"><a href="/content/list/{{next_page}}/">Next »</a></li>
+    {% else %}
+        <li class="next-off">Next »</li>
+    {% endif %}
+</ul> 
+
+{% endif %}
+
+{% endblock%}  

@@ -1,0 +1,24 @@
+{% extends "base-template.html" %}
+     {% block title %}ERROR{% endblock%}   
+
+     
+{% block content %}      
+<form id="admin"  method="post" name="f" style="">
+            <p><i>Bold</i> fields are required. <u>U</u>nderlined letters are accesskeys.</p>
+            
+
+            
+            <fieldset>
+                <legend>提示信息--访问受限</legend>         
+                <p> 您尚未在本站登记，留意登记公告</p>
+                <p> 您可以到以下位置登记  ---><a href="{% url viewaccount %}">Register</a></p>
+            </fieldset>
+            
+            
+            
+            <fieldset style="height:300px">
+                
+            </fieldset>
+            
+        </form>
+{% endblock%}  

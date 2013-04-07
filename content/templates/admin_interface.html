@@ -1,0 +1,91 @@
+{% extends "base-template.html" %}
+     {% block title %}控制台{% endblock%}   
+{% block js %}
+    $(document).ready(function() {
+        $('#submit_tag').click( function(){
+            tagname = $('#tagname').val();
+            pdata = {};
+            pdata['name'] = tagname;
+            ajaxCallforSubmit( '{% url addtag %}', '标添加成功','标签添加失败',pdata);
+        });
+         $('#submit_link').click( function(){
+            author = $('#author').val();
+            keyword = $('#keyword').val();
+            title = $('#title').val();
+            link = $('#link').val();
+            pdata = {};
+            pdata['author'] = author;
+            pdata['keyword'] = keyword;
+            pdata['title'] = title;
+            pdata['link'] = link;
+            ajaxCallforSubmit( '{% url addlink %}', '链接添加成功','链接添加失败',pdata);
+        });
+        $('#announcement_submit').click( function(){
+            ann = $('#announcement').val();
+            pdata = {};
+            pdata['ann'] = ann;
+            ajaxCallforSubmit( '{% url addannouncement %}', '通知添加成功','通知添加失败',pdata);
+        });
+        
+        $('#toggle_ad_promotion').click( function(){
+            pdata = {};
+            ajaxCallforSubmit( '{% url toggle_ad_promotion %}', '切换PROMOTION成功','切换PROMOTION失败',pdata);
+        });
+	})
+    function ajaxCallforSubmit( uurl, msg_s, msg_f , postdata ){
+        $.ajax({url: uurl,type: 'POST',data: postdata,dataType: 'json',timeout: 5000,
+            error: function(){alert("出现网络错误，请重试。");},
+            success: function(msg){
+                if( msg.result == 0){
+                alert(msg_f + '--' +  msg.info);} 
+                else if ( msg.result == 1 ){
+                alert(msg_s);}
+            }}); 
+    }
+{% endblock%}
+     
+{% block content %}      
+<form id="admin"  method="post" name="f">
+    <p><i>Bold</i> fields are required. <u>U</u>nderlined letters are accesskeys.</p>
+    <fieldset><legend>推荐链接</legend>
+        <label for="author" >作者(1-10word): </label>
+        <input type="text" id="author" name="author" title="author"><br>
+        <label for="keyword" >关键字(1-5word): </label>
+        <input type="text" id="keyword" name="keyword" title="category"><br>
+        <label for="title" class="required" >标题(): </label>
+        <input type="text" id="title" name="title"  title="标题"><br>
+        <label for="link" class="required" >链接: </label>
+        <input type="text" id="link" name="link"  title="链接"><br>
+        <label for="kludge"></label>
+        <input type="button" value="推荐链接" id="submit_link" > 
+        <small>later, functions for build these info automatically will be available</small>
+    </fieldset>
+    
+    <fieldset><legend>添加标签</legend>
+        <label for="labelname" >标签名 </label>
+        <input type="text" id="tagname" name="tagname"  value="" title="labelname"><br>
+        <label for="kludge"></label>
+        <input type="button" value="添加标签" id="submit_tag" > 
+    </fieldset>
+    
+    <fieldset style="padding-bottom:30px;">
+        <legend>现有标签</legend>
+        {% for tag in tags %}
+        <b><------{{tag.name}}-------></b><br>
+        {% endfor %}
+    </fieldset>
+    {% if isadmin %}
+    <fieldset><legend>Announcement Management</legend>
+        <label for="comments" >消息</label>
+        <textarea name="announcement" rows="5" cols="23" id="announcement"  title="comments"></textarea><br>
+        <label for="kludge"></label>
+        <input type="button" value="添加通告" id="announcement_submit" > 
+    </fieldset>
+    
+    <fieldset><legend>Adsystem management Management</legend>
+        <label for="link" class="required" >Going to AdPromotion: </label>
+        <input type="button" id="toggle_ad_promotion" name="adpromotion"  value="go"><br>
+    </fieldset>
+    {% endif %}
+</form>
+{% endblock%}  

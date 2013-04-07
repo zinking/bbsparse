@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Static Result</title>
+<meta http-equiv="Content-Language" content="zh-CN" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+</head>
+<body>
+
+{% if op %}
+        <ol>
+			{% for item in list %}
+			<li>
+			{{item.fillee}}-->{{item.bgfriend}}<--{{item.abstract.type}}
+			--{{item.abstract.ip}}--{{item.abstract.score}}--{{item.abstract.abstract}}	
+			</li>
+			{% endfor %}
+		</ol>
+{% else %}
+        <ol>
+			{% for item in list %}
+			<li>
+			{{item.type}}--{{item.ip}}--{{item.score}}--{{item.abstract}}
+			</li>
+			{% endfor %}
+		</ol>
+{% endif %}
+
+</body>
+</html>

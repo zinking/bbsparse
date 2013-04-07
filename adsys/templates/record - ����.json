@@ -1,0 +1,12 @@
+{"row": 3, "adgridsize": 30, "xnaddcol": 23, 
+"current_ad_list": [
+{
+    "title": "sample title", 
+    "link": "sample link", 
+    "location": ["A1", "B1"], 
+    "buyer": "buyer", 
+    "alt": "alt", 
+    "createtime": "datetime.datetime(2010, 3, 20, 22, 36, 27, 384000)", 
+    "gridsrc": "F:\\WorkSpace\\BBS_PARSE_V2\\AD\\pimages\\gridsrc.jpg"}
+    ], 
+    "addcol": 31}

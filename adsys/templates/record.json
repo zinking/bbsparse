@@ -1,0 +1,36 @@
+{"row": 3, "adgridsize": 30, "xnaddcol": 23, 
+"current_ad_list": [
+{
+    "title": "LQQ", 
+    "link": "http://www.renren.com/profile.do?id=36783992", 
+    "location": ["E1", "E1"], 
+    "buyer": "me", 
+    "alt": "LQQ", 
+    "createtime": "datetime.datetime(2010, 3, 20, 22, 36, 27, 384000)", 
+    "gridsrc": "F:\\WorkSpace\\BBS_PARSE_V2\\AD\\pimages\\lqq.jpg"},
+{
+    "title": "ZC", 
+    "link": "http://www.renren.com/profile.do?id=42498820", 
+    "location": ["H3", "H3"], 
+    "buyer": "me", 
+    "alt": "ZC", 
+    "createtime": "datetime.datetime(2010, 3, 20, 22, 36, 27, 384000)", 
+    "gridsrc": "F:\\WorkSpace\\BBS_PARSE_V2\\AD\\pimages\\zc.jpg"},
+{
+    "title": "TJ", 
+    "link": "http://www.renren.com/profile.do?id=244891812", 
+    "location": ["O1", "P2"], 
+    "buyer": "me", 
+    "alt": "TJ", 
+    "createtime": "datetime.datetime(2010, 3, 20, 22, 36, 27, 384000)", 
+    "gridsrc": "F:\\WorkSpace\\BBS_PARSE_V2\\AD\\pimages\\tj.jpg"},
+{
+    "title": "RLS", 
+    "link": "http://www.renren.com/profile.do?id=253471387", 
+    "location": ["S1", "S1"], 
+    "buyer": "me", 
+    "alt": "RLS", 
+    "createtime": "datetime.datetime(2010, 3, 20, 22, 36, 27, 384000)", 
+    "gridsrc": "F:\\WorkSpace\\BBS_PARSE_V2\\AD\\pimages\\rls.jpg"}
+    ], 
+    "addcol": 31}

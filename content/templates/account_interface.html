@@ -1,0 +1,66 @@
+{% extends "base-template.html" %}
+     {% block title %}控制台{% endblock%}   
+
+{% block js %}
+ 
+    $(document).ready(function() {
+        $('#submit_account').click( function(){
+            email = $('#email').val();
+            pdata = {};
+            pdata['email'] = email;
+            ajaxCallforSubmit( '{% url addaccount %}', '用户加成功','用户添加失败',pdata);
+        });
+    
+	})
+    
+    function ajaxCallforSubmit( uurl, msg_s, msg_f , postdata ){
+        $.ajax({
+                url: uurl,
+                type: 'POST',
+                data: postdata,
+                dataType: 'json',
+                timeout: 5000,
+                error: function(){
+                    alert("出现网络错误，请重试。");
+                },
+                success: function(msg){
+                    if( msg.result == 0){
+                        alert(msg_f + '--' +  msg.info);
+                    } 
+                    else if ( msg.result == 1 ){
+                        alert(msg_s );
+                    }
+                }
+             }); 
+    }
+{% endblock%}
+     
+{% block content %}      
+<form id="admin"  method="post" name="f" style="">
+            <p><i>Bold</i> fields are required. <u>U</u>nderlined letters are accesskeys.</p>
+            
+
+            
+            <fieldset>
+                <legend>提示信息</legend>
+                <p>{{info}}</p>
+                <p> 目前账户注册还有{{acount_left}}个账户配额</p>
+            </fieldset>
+            
+            {% if hasquota %}
+            <fieldset>
+                <legend>添加账户</legend>
+                <p>注意请使用GMAIL帐号，并正确的输入您的EMAIL地址</p>
+                <label for="email" accesskey="c">Email:</label>
+                <input type="text" id="email" name="email" tabindex="1" value="" title="email"><br>
+                <label for="kludge"></label>
+                <input type="button" value="添加" id="submit_account" tabindex="2"> 
+            </fieldset>
+            {% endif %}
+            
+            <fieldset style="height:300px">
+                
+            </fieldset>
+            
+        </form>
+{% endblock%}  

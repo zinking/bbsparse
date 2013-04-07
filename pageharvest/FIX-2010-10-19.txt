@@ -1,0 +1,66 @@
+#original status
+<SPAN class=titletext style="FONT-SIZE: 14px; MARGIN-LEFT: 80px; COLOR: #ffffff">十大热门</SPAN></DIV><div id="portal_block_302_content" class="content"><div class="module cl xl">
+<ul><li>
+	<dl class="cl xld">
+		<dt><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=76607" title="宝宝" target="_blank">宝宝</a></dt>
+		<dd>好可爱的娃,好可爱的娃,好可爱的娃。好可爱的娃。好可爱的娃。
+
+
+</dd>
+	</dl> 
+	<hr class="da" />
+</li><li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=103882" title="找男生朋友" target="_blank">找男生朋友</a></li><li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=245012" title="紫丁香社区使用帮助及功能调整报告" target="_blank">紫丁香社区使用帮助及功能调整报告</a></li><li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=106883" title="发一张小LOLI的照片（已被父母授权）" target="_blank">发一张小LOLI的照片（已被父母授权）</a></li><li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=245230" title="当忠内看见主公是孙权就头疼" target="_blank">当忠内看见主公是孙权就头疼</a></li><li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=245107" title="寻一个他" target="_blank">寻一个他</a></li><li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=245376" title="老汉洗浴中心泡澡 “泡”丢一睾丸" target="_blank">老汉洗浴中心泡澡 “泡”丢一睾丸</a></li><li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=102603" title="Cliff812系钓鱼者，请大家警惕！" target="_blank">Cliff812系钓鱼者，请大家警惕！</a></li><li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=245307" title="替老乡征个男友" target="_blank">替老乡征个男友</a></li><li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=245466" title="如果你发现" target="_blank">如果你发现</a></li></ul>
+
+</div></div></div><div id="portal_block_316" class="block move-span">
+
+#--> formatted
+<SPAN class=titletext style="FONT-SIZE: 14px; MARGIN-LEFT: 80px; COLOR: #ffffff">十大热门</SPAN>
+</DIV><div id="portal_block_302_content" class="content"><div class="module cl xl">
+<ul><li><dl class="cl xld">
+<dt><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=76607" title="宝宝" target="_blank">宝宝</a></dt>
+<dd>好可爱的娃,好可爱的娃,好可爱的娃。好可爱的娃。好可爱的娃</dd>
+</dl><hr class="da" /></li>
+    <li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=103882" title="找男生朋友" target="_blank">找男生朋友</a></li>
+    <li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=245012" title="紫丁香社区使用帮助及功能调整报告" target="_blank">紫丁香社区使用帮助及功能调整报告</a></li>
+    <li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=106883" title="发一张小LOLI的照片（已被父母授权）" target="_blank">发一张小LOLI的照片（已被父母授权）</a></li>
+    <li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=245230" title="当忠内看见主公是孙权就头疼" target="_blank">当忠内看见主公是孙权就头疼</a></li>
+    <li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=245107" title="寻一个他" target="_blank">寻一个他</a></li>
+    <li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=245376" title="老汉洗浴中心泡澡 “泡”丢一睾丸" target="_blank">老汉洗浴中心泡澡 “泡”丢一睾丸</a></li>
+    <li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=102603" title="Cliff812系钓鱼者，请大家警惕！" target="_blank">Cliff812系钓鱼者，请大家警惕！</a></li>
+    <li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=245307" title="替老乡征个男友" target="_blank">替老乡征个男友</a></li>
+    <li><a href="http://www.lilacbbs.com/forum.php?mod=viewthread&tid=245466" title="如果你发现" target="_blank">如果你发现</a></li>
+    </ul>
+</div>
+
+<li><a href="$link" title="$title" target="_blank">*</a></li>
+
+<SPAN class=titletext style="FONT-SIZE: 14px; MARGIN-LEFT: 80px; COLOR: #ffffff">十大热门</SPAN>
+</DIV><div id="portal_block_302_content" class="content"><div class="module cl xl">.*?
+</div></div></div><div id="portal_block_316" class="block move-span">
+
+<hr class="da" />
+
+</div>
+
+#1
+"""<SPAN class=titletext style="FONT-SIZE: 14px; MARGIN-LEFT: 80px; COLOR: #ffffff">十大热门</SPAN></DIV><div id="portal_block_302_content" class="content"><div class="module cl xl">
+<ul>.*?</ul>"""
+#2
+"""<hr class="da" />.*?
+
+</div>"""
+#3
+"""
+<SPAN class=titletext style="FONT-SIZE: 14px; MARGIN-LEFT: 80px; COLOR: #ffffff">十大热门</SPAN></DIV><div id="portal_block_302_content" class="content"><div class="module cl xl">
+.*?<div id="portal_block_316" class="block move-span">"""
+#4 after inspecting using firebug tried dom ----!!! it worked
+"""<div id="portal_block_302_content" class="content">.*?</div>"""
+
+#new problems broughted about
+1. scraped infomation are seemingly more instructed, info structure should be improved or restructure or abstracted
+-->stormed: store these infomation in serialized dict would be better choice, missed keys could be restored by default values.
+-->integrated with site framework redone. maybe in the next two versions.
+2. the parser engine should be improved to report site structure changes(only structure change) and site inavailabe for long time.
+!important.
+
+
