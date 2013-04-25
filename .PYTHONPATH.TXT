@@ -1,0 +1,1 @@
+set PYTHONPATH=d:\Program Files\Google\appengine\; d:\Program Files\Google\appengine\lib\yaml\lib; d:\Program Files\Google\appengine\lib\antlr3; d:\Program Files\Google\appengine\lib\ipaddr; d:\Program Files\Google\appengine\lib\webob;
