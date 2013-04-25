@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from djangotoolbox.fields import ListField,BlobField;
+#from djangotoolbox.fields import ListField,BlobField;
 
 
 
@@ -32,7 +32,8 @@ class Link(models.Model):
     createtime      = models.DateTimeField( null=False );
     updatetime      = models.DateTimeField( null=False );
     pagecache       = models.TextField( null=True );
-    tags            = ListField( models.CharField(max_length=75), null=True );
+    tags            = models.TextField( null=True );
+#    tags            = ListField( models.CharField(max_length=75), null=True );
     
     def get_mblog_str(self):
         from django.core.urlresolvers import reverse;

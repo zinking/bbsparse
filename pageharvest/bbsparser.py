@@ -11,11 +11,13 @@ import htmlentitydefs;
 import re,copy,string,logging,time;
 import urllib,urllib2,Cookie;
 
+logger = logging.getLogger('bbs_dig')
+
 from pageharvest.settings import *;
 from content.models       import *;
 
 def report_parse_exceptions( content ):
-    logging.info("Reporting parse problems to administrators" );
+    logger.error("Reporting parse problems to administrators" );
     mail.send_mail(sender="BBS TOP 10<bbstop10@appspot.com>",
       to="Albert <zinking3@gmail.com>",
       subject="Parsing Problem Report - BBSTOP10",
@@ -73,16 +75,20 @@ class BBSParser(object):
                 linkobj = Link.objects.get( titlelink=link['titlelink'] );
                 linkobj.updatetime = datetime.now();
                 linkobj.save();
+                info = 'existing links updated %s' %(nlinkobj)
+                logger.debug( info );
             except Link.DoesNotExist:
                     nlinkobj = Link( createtime=datetime.now(), updatetime=datetime.now(), school=sbpc  );
                     for k,v in link.items():
                         setattr( nlinkobj, k, v )
                     nlinkobj.save();
+                    info = 'new links fetched %s' %(nlinkobj)
+                    logger.debug( info );
                     sbpc.lastrefresh = datetime.now();
                     sbpc.save();
             except Exception,e:
                 info = 'CAUGHT EXCEPTION ' + e
-                logging.error( info );
+                logger.error( info );
 
     """
     PARSING BBS USING PREDEFINED PARSING CONFIGURATIONS
@@ -90,6 +96,7 @@ class BBSParser(object):
     def parsebbs(self, sbpc ):#parsepc
         t1 = time.time();
         pc = eval( sbpc.parseconfig );
+        logger.debug( 'parsing sbpc %s'%(sbpc) ); 
         try: 
             htmlstring = urllib2.urlopen( pc['locate'] ).read();
             sbpc.totalparse = sbpc.totalparse + 1;
@@ -97,8 +104,8 @@ class BBSParser(object):
         except Exception, e: 
             sbpc.failedparse = sbpc.failedparse + 1;
             info = "Failed to open following url %s of school: %s" % (pc['locate'], pc['bbsname']);
-            logging.error( info );
-            print info;
+            logger.error( info );
+            #print info;
             sbpc.save();
             return 0;
         if ( not pc.has_key('encoding') ): htmlstring = unicode(htmlstring, 'GBK', 'ignore').encode('utf8');
@@ -109,7 +116,7 @@ class BBSParser(object):
                 linklist = self.parsebbsbyRegularExpression(pc,htmlstring);
         except Exception, e:
             info = "Exception:SITE changed; schoolname= %s :%s"%( pc['bbsname'],e )
-            logging.error( info );
+            logger.error( info );
             sbpc.status = STATUS_EXCEPTION;
             sbpc.save();
             return 0;
@@ -118,7 +125,7 @@ class BBSParser(object):
         self.save_parsed_links(linklist, pc, sbpc );
         delta = (t2-t1)*1000;
         sbpc.totalparsetime = sbpc.totalparsetime + delta;
-        logging.debug("Successfully parsing school:%s costing %d milliseconds;" % (pc['bbsname'], delta ));
+        logger.debug("Successfully parsing school:%s costing %d milliseconds;" % (pc['bbsname'], delta ));
         sbpc.lastfresh = datetime.now();
         sbpc.status = STATUS_NORMAL;
         sbpc.save();
@@ -126,11 +133,12 @@ class BBSParser(object):
 
 
     def parsebbsbyXpath(self, pc, htmlstring):
+        logger.debug( 'parsing using XPATH' );
         try:
             dom = BeautifulSoup(htmlstring);
         except Exception, e:
             info = "Xpath parsing exception school:%s %s"%( pc['bbsname'],e);
-            logging.error( info );
+            logger.error( info );
             raise Exception(info);
         contentpath = Path(pc['xpath']);
         domblock = contentpath.apply(dom);
@@ -139,12 +147,14 @@ class BBSParser(object):
         return self.parsebbsDomDetail(blockstring, pc);
     
     def parsebbsbyRegularExpression(self, pc, htmlstring):
+        logger.debug( 'parsing using regular expression' );
         try:
             re_block = re.compile( pc['re'], re.DOTALL);
             blockstring = re_block.search(htmlstring).group();
+            #logger.debug( blockstring );
         except Exception, e:
             info = "RE parser exception school %s %s"%( pc['bbsname'],e);
-            logging.error( info ); 
+            logger.error( info ); 
             raise Exception(info);
         return self.parsebbsDomDetail(blockstring, pc);
     
@@ -182,8 +192,9 @@ class BBSParser(object):
 
         except Exception, e: 
             info = "Dom detail exception: school %s %s"%( pc['locate'], e );
-            logging.error( info ); 
-            raise Exception(info);         
+            logger.error( info ); 
+            raise Exception(info);
+        logger.debug( parsed_result ); 
         return  parsed_result;
         
         

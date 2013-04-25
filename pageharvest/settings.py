@@ -16,7 +16,13 @@ sjtubbs = {
     'locate':'http://bbs.sjtu.edu.cn/php/bbsindex.html',
     'root':'http://bbs.sjtu.edu.cn/',
     'dom_row_pattern' :"""
-        <tr>             <td >[<a href="*">$board</a>]</td>             <td><a href="$titlelink">$title</a></td>             <td>$author</td>             </tr>
+        <tr><td *>[<a
+        href="*"
+        *>$board</a>]</td><td><a
+        href="$titlelink"
+        *>$title
+        </a></td><td
+        *>$author</td></tr>
     """,
     'bbsname':'sjtu',
     'schoolname':u'上海交通大学',

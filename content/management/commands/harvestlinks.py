@@ -2,6 +2,9 @@ from django.core.management.base import BaseCommand
 from django.core.management.color import no_style
 from optparse import make_option
 
+import logging
+logger = logging.getLogger('bbs_dig')
+
 from content.models         import *;
 from pageharvest.settings   import *;
 from pageharvest.bbsparser import *;
@@ -30,6 +33,7 @@ class Command(BaseCommand):
         if options.get('harvest_school'):
             bbsname = options.get('harvest_school');
             try:
+                logger.debug( 'parsing %s'%(bbsname) );
                 sbpc = SBPC.objects.get( bbsname=bbsname );
                 parser.parsebbs( sbpc  );
             except Exception,e:
