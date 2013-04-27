@@ -150,6 +150,8 @@ class BBSParser(object):
         logger.debug( 'parsing using regular expression' );
         try:
             re_block = re.compile( pc['re'], re.DOTALL);
+            #print pc['re']
+            #print len( htmlstring )
             blockstring = re_block.search(htmlstring).group();
             #logger.debug( blockstring );
         except Exception, e:
@@ -180,10 +182,13 @@ class BBSParser(object):
             doc = CustomizedSoup(dom_block_str);        
             scraper = Scraper(dom_row_pattern);         #setup scraper to scrape row string
             ret = scraper.match(doc);
+            if len(ret) == 0:
+                raise Exception("0 RESULTS RETURNED FROM ROW PATTERN, ROW PATTERN BROKE");
             retlength = min( len(ret),10);
             ret = ret[0:retlength];
             parsed_result = []; 
-            #info = "totally %d items parsed for school %s " %( len(ret), pc['locate'] );
+            info = "totally %d items parsed for school %s " %( len(ret), pc['locate'] );
+            logger.info( info );
             for item in ret:
                 value = scraper.extract(item); 
                 self.fixitem(value, pc);
@@ -191,10 +196,12 @@ class BBSParser(object):
                 parsed_result.append(value);
 
         except Exception, e: 
-            info = "Dom detail exception: school %s %s"%( pc['locate'], e );
+            info = "Dom detail exception: school %s %s \n"%( pc['locate'], e );
+            info += "LENGHT OF DOCSTR %d"%(len(dom_block_str))
             logger.error( info ); 
             raise Exception(info);
-        logger.debug( parsed_result ); 
+        
+        #logger.debug( parsed_result ); 
         return  parsed_result;
         
         

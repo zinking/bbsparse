@@ -7,6 +7,9 @@ from content.models         import *;
 from pageharvest.settings   import *;
 
 
+
+
+    
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option( '-u', '--update',   dest='update_school', 
@@ -16,21 +19,25 @@ class Command(BaseCommand):
         make_option( '-a', '--add',   dest='add_school', 
              help='add specified bbs parse config'),
     )
-
+    
+    @staticmethod
+    def update_schoolconfig( bn ):
+        try:
+            sbpc = SBPC.objects.get( bbsname = bn );
+            c  = filter( lambda x: x['bbsname'] == bn , bbs_setting_list);
+            if len(c)>0 : cc = c[0];
+            sbpc.parseconfig = repr( cc );
+            sbpc.save();
+        except Exception,e:
+            print e;
+            return;
+        print 'config updated successfully ', bn;
 
     def handle(self,  **options):
         if options.get('update_school'):
             bn = options.get('update_school');
-            try:
-                sbpc = SBPC.objects.get( bbsname = bn );
-                c  = filter( lambda x: x['bbsname'] == bn , bbs_setting_list);
-                if len(c)>0 : cc = c[0];
-                sbpc.parseconfig = repr( cc );
-                sbpc.save();
-            except Exception,e:
-                print e;
-                return;
-            print 'config updated successfully ', bn;
+            update_schoolconfig( bn );
+            
         if options.get('delete_school'):
             bn = options.get('delete_school');
             try:

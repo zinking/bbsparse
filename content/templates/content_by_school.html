@@ -14,7 +14,7 @@
             <td nowrap="nowrap" style="width:20%" class=board>
             <a href="{{item.boardlink}}" target=_blank><b>{{item.board}}</b></a></td>
             <td nowrap="nowrap" style="width:80%" class=title>
-            <a href="{% url 'golink' %}?l={{item.id}}" target=_blank>
+            <a href="{{item.titlelink}}" target=_blank>
             <b>{{item.title}}</b></a></td></tr>                                          
         {% endfor %}</table>             
     </div>   
@@ -37,7 +37,9 @@
             <td nowrap="nowrap" style="width:20%" class=board>
             <a href="{{item.boardlink}}" target=_blank><b>{{item.board}}</b></a></td>
             <td nowrap="nowrap" style="width:80%" class=title>
-            <a href="{% url 'golink' %}?l={{item.sid}}" target=_blank><b>{{item.title}}</b></a></td></tr>                                          
+            <!--<a href="{% url 'golink' %}?l={{item.sid}}" target=_blank><b>{{item.title}}</b></a>-->
+            <a href="{{item.titlelink}}" target=_blank><b>{{item.title}}</b></a>
+            </td></tr>                                          
         {% endfor %}</table></div>
       
     {% for bbs_block in col2 %}
@@ -52,7 +54,9 @@
             <td nowrap="nowrap" style="width:20%" class=board>
             <a href="{{item.boardlink}}" target=_blank><b>{{item.board}}</b></a></td>
             <td nowrap="nowrap" style="width:80%" class=title>
-            <a href="{% url 'golink' %}?l={{item.sid}}" target=_blank><b>{{item.title}}</b></a></td></tr>                                          
+            <!--<a href="{% url 'golink' %}?l={{item.sid}}" target=_blank><b>{{item.title}}</b></a>-->
+            <a href="{{item.titlelink}}" target=_blank><b>{{item.title}}</b></a>
+            </td></tr>                                          
         {% endfor %}</table></div>
    {% endfor %}   
 </div>

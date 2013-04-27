@@ -3,11 +3,13 @@ from django.core.management.color import no_style
 from optparse import make_option
 
 import logging
-logger = logging.getLogger('bbs_dig')
+
 
 from content.models         import *;
 from pageharvest.settings   import *;
-from pageharvest.bbsparser import *;
+from pageharvest.bbsparser  import *;
+
+logger = logging.getLogger('bbs_dig')
 
 import datetime;
 
@@ -16,6 +18,8 @@ class Command(BaseCommand):
         make_option( '-c', '--schoolcount',  dest='harvest_count', 
              help='harvest school links of specified count'),
         make_option( '-s', '--schoolname',   dest='harvest_school', 
+             help='harvest school links of specified school'),
+        make_option( '-u', '--updateconfig', dest='update_config', 
              help='harvest school links of specified school'),
     )
 
@@ -32,6 +36,9 @@ class Command(BaseCommand):
             
         if options.get('harvest_school'):
             bbsname = options.get('harvest_school');
+            if options.get('update_config') is not None:
+                from config import Command as ConfigCommand;
+                ConfigCommand.update_schoolconfig(bbsname);
             try:
                 logger.debug( 'parsing %s'%(bbsname) );
                 sbpc = SBPC.objects.get( bbsname=bbsname );
