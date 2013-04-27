@@ -75,7 +75,7 @@ class BBSParser(object):
                 linkobj = Link.objects.get( titlelink=link['titlelink'] );
                 linkobj.updatetime = datetime.now();
                 linkobj.save();
-                info = 'existing links updated %s' %(nlinkobj)
+                info = 'existing links updated %s' %(linkobj)
                 logger.debug( info );
             except Link.DoesNotExist:
                     nlinkobj = Link( createtime=datetime.now(), updatetime=datetime.now(), school=sbpc  );
@@ -87,7 +87,7 @@ class BBSParser(object):
                     sbpc.lastrefresh = datetime.now();
                     sbpc.save();
             except Exception,e:
-                info = 'CAUGHT EXCEPTION ' + e
+                info = 'CAUGHT EXCEPTION %s'%( e )
                 logger.error( info );
 
     """
@@ -189,6 +189,8 @@ class BBSParser(object):
             parsed_result = []; 
             info = "totally %d items parsed for school %s " %( len(ret), pc['locate'] );
             logger.info( info );
+            #import pdb
+            #pdb.set_trace();
             for item in ret:
                 value = scraper.extract(item); 
                 self.fixitem(value, pc);
