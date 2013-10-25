@@ -36,7 +36,7 @@ class Command(BaseCommand):
     def handle(self,  **options):
         if options.get('update_school'):
             bn = options.get('update_school');
-            update_schoolconfig( bn );
+            Command.update_schoolconfig( bn );
             
         if options.get('delete_school'):
             bn = options.get('delete_school');
