@@ -98,7 +98,11 @@ class BBSParser(object):
         pc = eval( sbpc.parseconfig );
         logger.debug( 'parsing sbpc %s'%(sbpc) ); 
         try: 
-            htmlstring = urllib2.urlopen( pc['locate'] ).read();
+            #htmlstring = urllib2.urlopen( pc['locate'] ).read();
+            url = pc['locate'];
+            headers = { 'User-Agent' : 'Mozilla/5.0' };
+            req = urllib2.Request( url , None, headers)
+            htmlstring = urllib2.urlopen(req).read()
             sbpc.totalparse = sbpc.totalparse + 1;
             sbpc.rank = sbpc.rank - 1;
         except Exception, e: 
