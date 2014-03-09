@@ -1,12 +1,24 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-#from djangotoolbox.fields import ListField,BlobField;
+from django.utils import simplejson
+from django.core  import serializers
 
 
 
 STATUS_NORMAL = 1;
 STATUS_UNREACHABLE = 2;
 STATUS_EXCEPTION = 3;
+
+class QuerySetEncoder( simplejson.JSONEncoder ):
+    """
+    Encoding QuerySet into JSON format.
+    """
+    def default( self, object ):
+        try:
+            return serializers.serialize( "json", object,
+                                          ensure_ascii = False )
+        except:
+            return simplejson.JSONEncoder.default( self, object )
 
 class SBPC(models.Model):#SCHOOL BBS PARSE CONFIG
     bbsname         = models.CharField( max_length=75 ,default = "" );
@@ -19,6 +31,13 @@ class SBPC(models.Model):#SCHOOL BBS PARSE CONFIG
     totalparsetime  = models.FloatField( default = 0 );
     status          = models.IntegerField( default = 1 );
     parseconfig     = models.TextField( null=True );
+    
+    def to_dict( self ):
+        return {
+            'bbsname':self.bbsname,
+            'schoolname':self.schoolname,
+            'chinesename':self.chinesename,
+        }
  
 class Link(models.Model):
     
@@ -41,6 +60,13 @@ class Link(models.Model):
         msg = "[%s] %s %s" %(self.school.chinesename, self.title, link_pattern %(self.id) );
         if self.author != "": msg+= " BY "+self.author;
         return msg;
+        
+    def to_dict( self ):
+        return {
+            'board':self.board,
+            'title':self.title,
+            'titlelink':self.titlelink,
+        }
 
         
 class OptionSet(models.Model):

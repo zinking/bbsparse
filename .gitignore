@@ -1,1 +1,6 @@
 *.pyc
+.gaedata
+design
+settings.py
+install
+FixLog

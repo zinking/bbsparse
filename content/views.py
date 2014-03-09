@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
-from datetime import *;
+
 import time;
 import random;
+from datetime import *;
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import *
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils import simplejson
+
+
+from django.core  import serializers
 from django.shortcuts import render_to_response as rtr;
 from content.utils import render_to_response as rtrg;
 
@@ -21,14 +25,15 @@ from settings import *;
 from models import *;
 
 #from adsys.decorators import random_record_xn_access;
-@cache_page(60 * 15)
+@cache_page(60 * 15) #15 minutes
 def viewbyschool(request, template='content_by_school.html', extra_context=None):
     context = RequestContext(request); 
     sbpclist = SBPC.objects.filter( status = STATUS_NORMAL ).order_by( 'rank' );
     bbstop10infolist = [];
     for sbpc in sbpclist:
         top10list = Link.objects.filter( school = sbpc ).order_by('-updatetime')[0:10];
-        bbstop10infolist.append( {'sbpc': sbpc,'itemlist': top10list,} );
+        
+        bbstop10infolist.append( {'sbpc': jsbpc,'itemlist': jtop10list,} );
     
     length = len( bbstop10infolist );
     context['col1'] = bbstop10infolist[0:length/2];
@@ -39,6 +44,24 @@ def viewbyschool(request, template='content_by_school.html', extra_context=None)
     context_instance=RequestContext(request)
     context_instance.autoescape=False;
     return rtr(template, context,context_instance);
+    
+@cache_page(60 * 15)
+def linkbyschools(request, template='content_by_school.html', extra_context=None):
+    sbpclist = SBPC.objects.filter( status = STATUS_NORMAL ).order_by( 'rank' );
+    bbstop10infolist = [];
+    result = {}
+    for sbpc in sbpclist:
+        top10list = Link.objects.filter( school = sbpc ).order_by('-updatetime')[0:10];
+        d_top10list = map( lambda x:x.to_dict(), top10list );
+        bbstop10infolist.append( {'sbpc': sbpc.to_dict(),'itemlist': d_top10list,} );
+    
+    length = len( bbstop10infolist );
+    result['col1'] = bbstop10infolist[0:length/2];
+    result['col2'] = bbstop10infolist[length/2:length ];
+    data = simplejson.dumps( result)
+    return HttpResponse(data, mimetype="application/json")
+    
+    
 @cache_page(60 * 30)    
 def view_parsing_status(request, template='school_status_list.html', extra_context=None):
     context = RequestContext(request); 

@@ -17,7 +17,7 @@ class Command(NoArgsCommand):
         for sbpc in sbpc_list:
             sbpc.delete();
         print 'All Configs cleared';
-        link_list = Links.objects.all();
+        link_list = Link.objects.all();
         for link in link_list:
             link.delete();
         print 'All Links cleared';

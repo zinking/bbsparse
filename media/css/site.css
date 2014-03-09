@@ -1,0 +1,39 @@
+.navbar-brand
+{
+  background: url(../images/blogo.png) no-repeat left center;
+  height: 40px;
+  width: 150px;
+  margin-top:5px;
+  margin-left:20px;
+}
+
+.list-group-item{
+	overflow:hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.label-default{
+	background-color:#D9D9D9;
+	color:#666;
+}
+
+.list-group{
+	font-size:0.5em;
+}
+
+.file-input{
+	position:relative;
+}
+
+.make_transparent{
+	position:absolute;
+	z-index:2;
+	top:0;
+	left:0;
+	filter: alpha(opacity=0);
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+	opacity:0;
+	background-color:transparent;
+	color:transparent;
+}

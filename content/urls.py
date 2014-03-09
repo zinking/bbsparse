@@ -1,18 +1,11 @@
 from django.conf.urls.defaults import *;
-#from django.views.generic.simple import direct_to_template;
+
 from django.contrib.auth import views as auth_views;
 
 from content.views import *;
 
 urlpatterns = patterns('',
-    url(r'^home/$', viewbyschool, 
-        {'template':'content_by_school.html'},      name='content_home'),
-    #shorten the stupid long url.
-    url(r'^go$',viewframedcontentV2,
-        {'template':'framed_link_content.html'},    name='content_framed_detailV2'),
-    url(r'^status/$',view_parsing_status,
-        {'template':'school_status_list.html'},     name='view_parsing_status'),
-
+    url(r'^linkbyschools.json$', linkbyschools, {}, name='linkbyschools'),
 )
 
 """
@@ -27,4 +20,7 @@ url(r'^management/mblog/$', gae_cron_job_sendblog,
     {'template': 'cron_mblog_result.html'} ,    name='mgmtcron_mblog'),
 url(r'^management/setup/$', gae_setup_initial_data, 
     {'template': 'cron_result.html'} ,          name='mgmtstup'),
+    
+    url(r'^go$',viewframedcontentV2, {'template':'framed_link_content.html'},    name='content_framed_detailV2'),
+    url(r'^status/$',view_parsing_status,  {'template':'school_status_list.html'},     name='view_parsing_status'),
 """
