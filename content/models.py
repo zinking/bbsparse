@@ -63,6 +63,7 @@ class Link(models.Model):
         
     def to_dict( self ):
         return {
+            'id':self.id,
             'board':self.board,
             'title':self.title,
             'titlelink':self.titlelink,

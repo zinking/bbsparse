@@ -6,6 +6,8 @@ from content.views import *;
 
 urlpatterns = patterns('',
     url(r'^linkbyschools.json$', linkbyschools, {}, name='linkbyschools'),
+    url(r'^status/$',view_parsing_status,  {'template':'status.html'},     name='view_parsing_status'),
+    url(r'^go$',viewframedcontentV2, {'template':'framed_link_content.html'},    name='content_framed_detailV2'),
 )
 
 """
@@ -21,6 +23,6 @@ url(r'^management/mblog/$', gae_cron_job_sendblog,
 url(r'^management/setup/$', gae_setup_initial_data, 
     {'template': 'cron_result.html'} ,          name='mgmtstup'),
     
-    url(r'^go$',viewframedcontentV2, {'template':'framed_link_content.html'},    name='content_framed_detailV2'),
+    
     url(r'^status/$',view_parsing_status,  {'template':'school_status_list.html'},     name='view_parsing_status'),
 """

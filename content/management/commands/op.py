@@ -25,6 +25,17 @@ class Command(BaseCommand):
         make_option( '-d', '--deleteschoollink',  dest='deletelink', 
              help='deletelinksofsomeschool'),
     )
+    
+    @staticmethod
+    def delete_schoollink( bn ):
+        try:
+            qschool = SBPC.objects.get( bbsname = bn );
+            links = Link.objects.filter( school = qschool );
+            for link in links:
+                link.delete()
+        except Exception,e:
+            raise e;
+        print 'config updated successfully ', bn;
 
 
     def handle(self,  **options):
@@ -40,8 +51,10 @@ class Command(BaseCommand):
             qschool.status = 1;
             qschool.save();
             print 'school back into normal now';
+            
         if options.get('deletelink'):
-            pass;#TBD
+            schoolname = options.get('deletelink');
+            Command.delete_schoollink(schoolname)
             
             
             

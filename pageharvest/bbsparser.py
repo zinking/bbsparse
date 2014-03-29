@@ -7,6 +7,7 @@ from customized_soup import CustomizedSoup;
 from scraper import Scraper;
 
 import htmlentitydefs;
+import HTMLParser
 
 import re,copy,string,logging,time;
 import urllib,urllib2,Cookie;
@@ -16,6 +17,7 @@ logger = logging.getLogger('bbs_dig')
 from pageharvest.settings import *;
 from content.models       import *;
 
+h = HTMLParser.HTMLParser()
 def report_parse_exceptions( content ):
     logger.error("Reporting parse problems to administrators" );
     mail.send_mail(sender="BBS TOP 10<bbstop10@appspot.com>",
@@ -100,7 +102,7 @@ class BBSParser(object):
         try: 
             #htmlstring = urllib2.urlopen( pc['locate'] ).read();
             url = pc['locate'];
-            headers = { 'User-Agent' : 'Mozilla/5.0' };
+            headers = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.95 Safari/537.36' };
             req = urllib2.Request( url , None, headers)
             htmlstring = urllib2.urlopen(req).read()
             sbpc.totalparse = sbpc.totalparse + 1;
@@ -112,7 +114,8 @@ class BBSParser(object):
             #print info;
             sbpc.save();
             return 0;
-        if ( not pc.has_key('encoding') ): htmlstring = unicode(htmlstring, 'GBK', 'ignore').encode('utf8');
+        encoding = pc['encoding'] if ( pc.has_key('encoding') )else 'GBK' 
+        htmlstring = unicode(htmlstring, encoding, 'ignore').encode('utf8');
         try:
             if( pc['type'] == PARSE_USE_XPATH ):
                 linklist = self.parsebbsbyXpath(pc,htmlstring);           
@@ -123,7 +126,7 @@ class BBSParser(object):
             logger.error( info );
             sbpc.status = STATUS_EXCEPTION;
             sbpc.save();
-            return 0;
+            return 0
         t2 = time.time();
             
         self.save_parsed_links(linklist, pc, sbpc );
@@ -175,6 +178,10 @@ class BBSParser(object):
             titlegroup = re_board.search(item['title']);
             item['board'] = titlegroup.group('board');
             item['title'] = titlegroup.group('title');
+        if ( 'pat_board_from_titlelink' in pc.keys() ):
+            re_board_from_titlelink = re.compile( pc[ 'pat_board_from_titlelink' ], re.DOTALL);
+            match_group = re_board_from_titlelink.search(item['titlelink']);
+            item['board'] = match_group.group('board')
         
             
     #return links list
@@ -193,14 +200,12 @@ class BBSParser(object):
             parsed_result = []; 
             info = "totally %d items parsed for school %s " %( len(ret), pc['locate'] );
             logger.info( info );
-            #import pdb
-            #pdb.set_trace();
             for item in ret:
                 value = scraper.extract(item); 
+                value['titlelink'] = h.unescape( value['titlelink'] );
                 self.fixitem(value, pc);
-                value['title'] = unescape( value['title'] );#SAFE TITLE
+                #value['title'] = unescape( value['title'] );#SAFE TITLE
                 parsed_result.append(value);
-
         except Exception, e: 
             info = "Dom detail exception: school %s %s \n"%( pc['locate'], e );
             info += "LENGHT OF DOCSTR %d"%(len(dom_block_str))

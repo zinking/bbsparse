@@ -2,5 +2,5 @@
 .gaedata
 design
 settings.py
-install
+install*
 FixLog

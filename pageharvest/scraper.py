@@ -120,7 +120,7 @@ class Scraper(object):
             return self.matchTag(exp, actual)
         elif isinstance(exp, NavigableString):
             return True
-    
+    #tag matching, if * not set and length different then won't match
     def matchTag(self, exp, actual):                
         if exp.name != actual.name:
             return False

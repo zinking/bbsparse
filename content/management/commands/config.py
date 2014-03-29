@@ -27,6 +27,7 @@ class Command(BaseCommand):
             c  = filter( lambda x: x['bbsname'] == bn , bbs_setting_list);
             if len(c)>0 : cc = c[0];
             sbpc.parseconfig = repr( cc );
+            sbpc.chinesename = cc['chinesename']
             sbpc.save();
         except Exception,e:
             print e;
@@ -51,7 +52,7 @@ class Command(BaseCommand):
             bn = options.get('add_school');
             try:
                 c  = filter( lambda x: x['bbsname'] == bn , bbs_setting_list);
-                if len(c)>0 : bc = c[0];
+                bc = c[0];
                 sbpc = SBPC( bbsname = bc['bbsname'], schoolname = bc['schoolname'],
                     rank = bc['rank'], chinesename = bc['chinesename'], 
                     parseconfig = bc );

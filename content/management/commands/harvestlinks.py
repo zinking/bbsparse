@@ -21,6 +21,8 @@ class Command(BaseCommand):
              help='harvest school links of specified school'),
         make_option( '-u', '--updateconfig', dest='update_config', 
              help='harvest school links of specified school'),
+        make_option( '-d', '--deletelink',   dest='delete_link', 
+             help='delete existing links of specified school'),
     )
 
     def handle(self,  **options):
@@ -29,7 +31,7 @@ class Command(BaseCommand):
             schoolcount     =   int(options.get('harvest_count'))#options.harvest_count;
             currentcount    = 0;
             try:
-                sbpc_list = SBPC.objects.all().order_by('rank');
+                sbpc_list = SBPC.objects.exclude( status=STATUS_UNREACHABLE ).order_by('rank');
                 for sbpc in sbpc_list :  parser.parsebbs( sbpc );
             except Exception,e:
                 raise e;
@@ -39,6 +41,10 @@ class Command(BaseCommand):
             if options.get('update_config') is not None:
                 from config import Command as ConfigCommand;
                 ConfigCommand.update_schoolconfig(bbsname);
+            if options.get('delete_link') is not None:
+                from op     import Command as OperatCommand;
+                OperatCommand.delete_schoollink(bbsname);
+                
             try:
                 logger.debug( 'parsing %s'%(bbsname) );
                 sbpc = SBPC.objects.get( bbsname=bbsname );

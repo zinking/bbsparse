@@ -11,6 +11,7 @@ from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response
+from django.core.exceptions import ObjectDoesNotExist
 
 from settings import FILE_ROOT
 from read.models import *
@@ -38,7 +39,7 @@ def download_file(request, pdfname):
         obj = BookFile.objects.get( sha1sum = file_sha1sum )
         return serve(request, os.path.basename(obj.orig_file.path), os.path.dirname(obj.orig_file.path))
     except ObjectDoesNotExist:
-        return HttpResponse("specified file does not exist")
+        return HttpResponseNotFound('Page not found')
     except Exception,e:
         logger.info( 'serving file error %s'%(e) );
     return HttpResponseNotFound('Page not found')
