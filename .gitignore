@@ -1,6 +1,10 @@
 *.pyc
 .gaedata
 design
-settings.py
+settings*
 install*
 FixLog
+asg
+*secret*
+media*
+*~

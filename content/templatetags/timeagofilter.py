@@ -26,8 +26,8 @@ def timeago(timestamp = None):
     str = ""
     tStr = ""
     if days > 0:
-        if days == 1:   tStr = "d"
-        else:           tStr = "ds"
+        if days == 1:   tStr = "day"
+        else:           tStr = "days"
         str = str + "%s %s" %(days, tStr)
         return str
     elif hours > 0:

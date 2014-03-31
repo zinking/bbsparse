@@ -1,220 +1,128 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html lang="en">
-<head>
-	<title>  校园里没有新鲜事   </title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf8">
-	<meta name="description" content="news feed campus in china">
-	<meta name="keywords" content="bbs china campus top10">
-
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="/media/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/media/css/font-awesome.min.css">
-
-    <link rel="stylesheet" href="/media/css/jquery.fileupload.css">
-	<link rel="stylesheet" href="/media/css/jquery.fileupload-ui.css">
-    
-    <link rel="stylesheet" href="/media/css/site.css">
-    
-</head>
-
-<body >
-
-<div class="navbar navbar-default">
-<div class="container">
-<div class="navbar-header">
-  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>
-  </button>
-  
-  <a class="navbar-brand " href="/"></a>
-  
-  
-</div>
-
-<div class="navbar-collapse collapse navbar-responsive-collapse">
-
-  <ul class="nav navbar-nav">
-    <li class="active"><a href="#">Read</a></li>
-    <li><a href="#">Link</a></li>
-    <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown">View <b class="caret"></b></a>
-      <ul class="dropdown-menu">
-        <li><a href="#">school</a></li>
-        <li><a href="#">link</a></li>
-        <li><a href="#">comment</a></li>
-        <li class="divider"></li>
-        <li><a href="#">trend</a></li>
-      </ul>
-    </li>
-    
-  </ul>
-  <form class="navbar-form navbar-left">
-    <input type="text" class="form-control col-lg-8" placeholder="Search">
-  </form>
-  
-  
-  <ul class="nav navbar-nav navbar-right">
-    
-        {% if user.is_authenticated %}
-        <li><a href="#"> Hello {{ user.username  }} </a></li>
+{% extends "base.html" %}
+	  {% block css %}
+		<link rel="stylesheet" href="/media/css/jquery.fileupload.css">
+		<link rel="stylesheet" href="/media/css/jquery.fileupload-ui.css">	  
+		<link rel="stylesheet" href="/media/css/site.css"> 
+	  {% endblock%}
+	  
+	  {% block js %}
+		<script src="/media/js/jquery.ui.widget.js"></script>
+		<script src="/media/js/jquery.fileupload.js"></script>
+		<script src="/media/js/jquery.fileupload-process.js"></script>
+		<script src="/media/js/jquery.fileupload-angular.js"></script>
+		<script src="/media/js/read.js"></script>
+	  {% endblock%}
+	  
+	  {% block navmenu %}    
+		{% if user.is_authenticated %}
+			<li><a href="#"> Hello {{ user.username  }} </a></li>
         {% else %}
-        <li><a href="{% url 'socialauth_begin' 'google-oauth2' %}"> Login With Google </a></li>
+			<li><a href="{% url 'socialauth_begin' 'google-oauth2' %}"> Login With Google </a></li>
         {% endif %}
-    
-    <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown">Most Popular <b class="caret"></b></a>
-      <ul class="dropdown-menu">
-        <li><a href="#">school</a></li>
-        <li><a href="#">link</a></li>
-        <li><a href="#">comment</a></li>
-        <li class="divider"></li>
-        <li><a href="#">trend</a></li>
-      </ul>
-    </li>
-  </ul>
-</div><!-- /.nav-collapse -->
-</div><!-- container -->
-</div><!-- /.navbar -->
-     {% verbatim %}
-<div class="container" data-ng-app="reader">
-  
-      <div class="container row">
-      <form id="fileupload" action="" method="POST" enctype="multipart/form-data" 
-             data-ng-controller="file_upload_controller" data-file-upload="options" 
-            data-ng-class="{'fileupload-processing': processing() || loadingFiles}">
+      {% endblock%}
+	  
+	  {% block content %}
+			  {% verbatim %}	
+			  <div class="container row" data-ng-app="bbsparse">
+			  <form id="fileupload" action="" method="POST" enctype="multipart/form-data" 
+					data-ng-controller="file_upload_controller" data-file-upload="options" 
+					data-ng-class="{'fileupload-processing': processing() || loadingFiles}">
 
-        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
-        <div class="row fileupload-buttonbar">
-            <div class="col-lg-7">
-                <!-- The fileinput-button span is used to style the file input field as button -->
-                <span class="btn btn-success fileinput-button" ng-class="{disabled: disabled}">
-                    <i class=" icon-plus-sign"></i>
-                    <span>Add files...</span>
-                    <input type="file" name="files[]" multiple ng-disabled="disabled">
-                </span>
-                <button type="button" class="btn btn-primary start" data-ng-click="submit()">
-                    <i class=" icon-upload"></i>
-                    <span>Start upload</span>
-                </button>
-                <button type="button" class="btn btn-warning cancel" data-ng-click="cancel()">
-                    <i class=" "></i>
-                    <span>Cancel upload</span>
-                </button>
-                <!-- The global file processing state -->
-                <span class="fileupload-process"></span>
-            </div>
-            <!-- The global progress state -->
-            <div class="col-lg-5 fade" data-ng-class="{in: active()}">
-                <!-- The global progress bar -->
-                <div class="progress progress-striped active" data-file-upload-progress="progress()">
-                	<div class="progress-bar progress-bar-success" data-ng-style="{width: num + '%'}"></div>
-                </div>
-                <!-- The extended global progress state -->
-                <div class="progress-extended">&nbsp;</div>
-            </div>
-        </div>
-        <!-- The table listing the files available for upload/download -->
-        <table class="table table-striped files ng-cloak">
-            <tr data-ng-repeat="file in queue" data-ng-class="{'processing': file.$processing()}">
-                <td data-ng-switch data-on="!!file.thumbnailUrl">
-                    <div class="preview" data-ng-switch-when="true">
-                        <a data-ng-href="{{file.url}}" title="{{file.name}}" 
-                        	download="{{file.name}}" data-gallery><img data-ng-src="{{file.thumbnailUrl}}" alt=""></a>
-                    </div>
-                    <div class="preview" data-ng-switch-default data-file-upload-preview="file"></div>
-                </td>
-                <td>
-                    <p class="name" data-ng-switch data-on="!!file.url">
-                        <span data-ng-switch-when="true" data-ng-switch data-on="!!file.thumbnailUrl">
-                            <a data-ng-switch-when="true" data-ng-href="{{file.url}}" title="{{file.name}}" download="{{file.name}}" data-gallery>{{file.name}}</a>
-                            <a data-ng-switch-default data-ng-href="{{file.url}}" title="{{file.name}}" download="{{file.name}}">{{file.name}}</a>
-                        </span>
-                        <span data-ng-switch-default>{{file.name}}</span>
-                    </p>
-                    <strong data-ng-show="file.error" class="error text-danger">{{file.error}}</strong>
-                </td>
-                <td>
-                    <p class="size">{{file.size | formatFileSize}}</p>
-                    <div class="progress progress-striped active fade" data-ng-class="{pending: 'in'}[file.$state()]" data-file-upload-progress="file.$progress()">
-                    	<div class="progress-bar progress-bar-success" data-ng-style="{width: num + '%'}"></div>
-                    </div>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-primary start" data-ng-click="file.$submit()" 
-                    	data-ng-hide="!file.$submit || options.autoUpload" data-ng-disabled="file.$state() == 'pending' || file.$state() == 'rejected'">
-                        <i class="icon-upload"></i>
-                        <span>Start</span>
-                    </button>
-                    <button type="button" class="btn btn-warning cancel" data-ng-click="file.$cancel()" data-ng-hide="!file.$cancel">
-                        <i class=""></i>
-                        <span>Cancel</span>
-                    </button>
-                    <button data-ng-controller="file_destroy_controller" type="button" class="btn btn-danger destroy" data-ng-click="file.$destroy()" data-ng-hide="!file.$destroy">
-                        <i class=""></i>
-                        <span>Delete</span>
-                    </button>
-                </td>
-            </tr>
-        </table>
-    </form>
-      </div> <!--end of row-->
-       
-      
-     <div class="progress progress-striped" style="margin-bottom: 9px; margin-top:9px;">
-        <div class="progress-bar progress-bar-info" style="width: 100%"></div>
-      </div>
-      
-      <div class="container row"  data-ng-controller="list_book_controller" 
-            ng-init="init()">
-      	<ul class="breadcrumb" style="margin-bottom: 5px;"
-            ng-repeat="book in booksubs" >
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Library</a></li>
-            <li><a href="read_book?booksha1={{book.booksha1}}"> {{book.bookname}} </a></li>
-          </ul>
-          
-      </div>
-      {% endverbatim %}
-	  <div class="progress progress-striped" style="margin-bottom: 9px; margin-top:9px;">
-        <div class="progress-bar progress-bar-info" style="width: 100%"></div>
-      </div> 
-      <footer>
-        <div class="row">
-          <div class="col-lg-12">
+				<!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+				<div class="row fileupload-buttonbar">
+					<div class="col-lg-7">
+						<!-- The fileinput-button span is used to style the file input field as button -->
+						<span class="btn btn-success fileinput-button" ng-class="{disabled: disabled}">
+							<i class=" icon-plus-sign"></i>
+							<span>Add files...</span>
+							<input type="file" name="files[]" multiple ng-disabled="disabled">
+						</span>
+						<button type="button" class="btn btn-primary start" data-ng-click="submit()">
+							<i class=" icon-upload"></i>
+							<span>Start upload</span>
+						</button>
+						<button type="button" class="btn btn-warning cancel" data-ng-click="cancel()">
+							<i class=" "></i>
+							<span>Cancel upload</span>
+						</button>
+						<!-- The global file processing state -->
+						<span class="fileupload-process"></span>
+					</div>
+					<!-- The global progress state -->
+					<div class="col-lg-5 fade" data-ng-class="{in: active()}">
+						<!-- The global progress bar -->
+						<div class="progress progress-striped active" data-file-upload-progress="progress()">
+							<div class="progress-bar progress-bar-success" data-ng-style="{width: num + '%'}"></div>
+						</div>
+						<!-- The extended global progress state -->
+						<div class="progress-extended">&nbsp;</div>
+					</div>
+				</div>
+				<!-- The table listing the files available for upload/download -->
+				<table class="table table-striped files ng-cloak">
+					<tr data-ng-repeat="file in queue" data-ng-class="{'processing': file.$processing()}">
+						<td data-ng-switch data-on="!!file.thumbnailUrl">
+							<div class="preview" data-ng-switch-when="true">
+								<a data-ng-href="{{file.url}}" title="{{file.name}}" 
+									download="{{file.name}}" data-gallery><img data-ng-src="{{file.thumbnailUrl}}" alt=""></a>
+							</div>
+							<div class="preview" data-ng-switch-default data-file-upload-preview="file"></div>
+						</td>
+						<td>
+							<p class="name" data-ng-switch data-on="!!file.url">
+								<span data-ng-switch-when="true" data-ng-switch data-on="!!file.thumbnailUrl">
+									<a data-ng-switch-when="true" data-ng-href="{{file.url}}" title="{{file.name}}" download="{{file.name}}" data-gallery>{{file.name}}</a>
+									<a data-ng-switch-default data-ng-href="{{file.url}}" title="{{file.name}}" download="{{file.name}}">{{file.name}}</a>
+								</span>
+								<span data-ng-switch-default>{{file.name}}</span>
+							</p>
+							<strong data-ng-show="file.error" class="error text-danger">{{file.error}}</strong>
+						</td>
+						<td>
+							<p class="size">{{file.size | formatFileSize}}</p>
+							<div class="progress progress-striped active fade" data-ng-class="{pending: 'in'}[file.$state()]" data-file-upload-progress="file.$progress()">
+								<div class="progress-bar progress-bar-success" data-ng-style="{width: num + '%'}"></div>
+							</div>
+						</td>
+						<td>
+							<button type="button" class="btn btn-primary start" data-ng-click="file.$submit()" 
+								data-ng-hide="!file.$submit || options.autoUpload" data-ng-disabled="file.$state() == 'pending' || file.$state() == 'rejected'">
+								<i class="icon-upload"></i>
+								<span>Start</span>
+							</button>
+							<button type="button" class="btn btn-warning cancel" data-ng-click="file.$cancel()" data-ng-hide="!file.$cancel">
+								<i class=""></i>
+								<span>Cancel</span>
+							</button>
+							<button data-ng-controller="file_destroy_controller" type="button" class="btn btn-danger destroy" data-ng-click="file.$destroy()" data-ng-hide="!file.$destroy">
+								<i class=""></i>
+								<span>Delete</span>
+							</button>
+						</td>
+					</tr>
+				</table>
+			</form>
+			
+			
+			  
+			 <div class="progress progress-striped" style="margin-bottom: 9px; margin-top:9px;">
+				<div class="progress-bar progress-bar-info" style="width: 100%"></div>
+			  </div>
+			  
+			  <div class="container row"  data-ng-controller="list_book_controller" 
+					ng-init="init()">
+				<ul class="breadcrumb" style="margin-bottom: 5px;"
+					ng-repeat="book in booksubs" >
+					<li><a href="#">Home</a></li>
+					<li><a href="#">Library</a></li>
+					<li><a href="read_book?booksha1={{book.booksha1}}"> {{book.bookname}} </a></li>
+				  </ul>
+			  </div>
+			  {% endverbatim %}
 
-            <ul class="list-unstyled list-inline">
-              <li class="pull-right"><a href="#top">Back to top</a></li>
-              <li class="pull-right"> 2011-2014 </li>
-              <li><a href="http://great-way.appspot.com/">Blog</a></li>
-              <li><a href="http://feeds.feedburner.com/">RSS(*)</a></li>
-              <li><a href="https://twitter.com/zinking">twitter</a></li>
-              <li><a href="https://github.com/zinking/bbsparse/">GitHub</a></li>
-              <li><a href="https://twitter.com/thomashpark">Site Status</a></li>
-              <li><a href="https://www.paypal.com/cgi-bin/">Donate(*)</a></li>
-            </ul>
-            <p>Made by <a href="http://thomaspark.me" rel="nofollow">kin zing</a>. Contact him at <a href="mailto:zinking3@gmail.com">zinking#gmail.com</a>.</p>
-            <p>Powered by <a>Django</a> | <a>BootStrap</a></p>
-            
-          </div>
-        </div>
-      </footer>
-</div>
-
-
-	<!-- jQuery (necessary for Bootstrap's JavaScript plugins)  -->
-    <script src="/media/js/jquery-1.11.0.min.js" type="text/javascript"></script> 
-    <script src="/media/js/angular.min.js" type="text/javascript"></script>
-
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/media/js/bootstrap.min.js" type="text/javascript"></script>
-    <script src="/media/js/jquery.ui.widget.js"></script>
-    <script src="/media/js/jquery.fileupload.js"></script>
-    <script src="/media/js/jquery.fileupload-process.js"></script>
-    <script src="/media/js/jquery.fileupload-angular.js"></script>
-    <script src="/media/js/read.js"></script>
-</body>
-
-</html>
+			</div> <!--end of row-->
+			  
+			  <div class="progress progress-striped" style="margin-bottom: 9px; margin-top:9px;">
+				<div class="progress-bar progress-bar-info" style="width: 100%"></div>
+			  </div> 
+	  {% endblock%}

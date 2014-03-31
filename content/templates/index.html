@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+	  {% block css %}    <link rel="stylesheet" href="/media/css/site.css"> {% endblock%}
+	  {% block js %}    <script src="/media/js/site.js" type="text/javascript"></script> {% endblock%}
+	  {% block navmenu %}    
+		<li><a href="/content/status">Status</a></li>
+      {% endblock%}
+	  {% block content %} 
+			{% verbatim %}
+			  <div class="row" ng-controller="FeedListCtrl">
+				<div class="col-md-6">
+					<div class="panel panel-default">
+					  <div class="panel-heading">
+						<h3 class="panel-title">签名档 <span class="label label-primary icon-beer"> mengli</span></h3>
+					  </div>
+					  <div class="panel-body">
+						<p>亚里士多德从未试图掩饰他对工艺的蔑视。他认为手工艺人的地位类似于奴隶。由于这个原因，根本不可能把手工艺人看作是自由市民。。。自由市民的孩子应该克制自己，不去花太多的精力从事有用的活动，这些活动会把他们拖入手工艺人的层次。因为工艺劳动阻碍了自由市民锻炼德行和使用美德所应该具备的头脑和常识” 亚里士多德是统治阶级的倡导者，不是民主的支持者，所有利益集团都带有自身的局限性，没有一个考虑所有人的利益。在今天，艺术的地位再次得到质疑，艺术间竞争的消失预示人类平等化的开始。</p>
+					  </div>
+					</div>
+					<div class="spinner" ng-show="loading">
+						<img src="/media/images/ajax-loader.gif" class="ajax-loader"/>
+					</div>
+					<ul ng-repeat="school in linkbyschools.col1" class="list-group" ng-cloak>
+						<li class="list-group-item">
+						  <h4 class="list-group-item-heading">
+							<i class="icon-flag  pull-left"></i>
+						  <a href="{{school.sbpc.schoollink}}" target=_blank>{{school.sbpc.schoolname}}-{{school.sbpc.chinesename}}</a>
+						  </h4>
+						</li>
+						<li ng-repeat="item in school.itemlist" class="list-group-item"  >
+						  <span class="label label-default board">{{item.board}}</span>
+						  <span class="badge icon-comment" show-parent-hover >0</span>
+						  <span class="badge " hide-parent-hover >{{item.createtime}}</span>
+						  <a href="/content/go?l={{item.id}}" class="badge icon-arrow-up" show-parent-hover target=_blank>0</a>
+						  <a href="{{item.titlelink}}" target=_blank>{{item.title}}</a>
+						</li>
+					  </ul>
+				</div><!--column 1-->
+				
+				<div class="col-md-6">
+					<div class="spinner" ng-show="loading">
+						<img src="/media/images/ajax-loader.gif" class="ajax-loader"/>
+					</div>
+					<ul ng-repeat="school in linkbyschools.col2" class="list-group" ng-cloak>
+
+						<li class="list-group-item">
+						<h4 class="list-group-item-heading">
+							<i class="icon-flag  pull-left"></i>
+						  <a href="{{school.sbpc.schoollink}}" target=_blank>{{school.sbpc.schoolname}}-{{school.sbpc.chinesename}}</a>
+						  </h4>
+						</li>
+						<li ng-repeat="item in school.itemlist" class="list-group-item"  >
+						  <span class="label label-default board">{{item.board}}</span>
+						  <span class="badge icon-comment" show-parent-hover >0</span>
+						  <span class="badge " hide-parent-hover >{{item.createtime}}</span>
+						  <a href="/content/go?l={{item.id}}" class="badge icon-arrow-up" show-parent-hover target=_blank>0</a>
+						  <a href="{{item.titlelink}}" target=_blank>{{item.title}}</a>
+						</li>
+					</ul>
+				</div><!--column 2-->
+			  </div> <!--main content-->
+			  {% endverbatim %}
+	  {% endblock%}   

@@ -3,6 +3,8 @@ from django.db import models
 from django.utils import simplejson
 from django.core  import serializers
 
+from content.templatetags import timeagofilter
+
 
 
 STATUS_NORMAL = 1;
@@ -33,7 +35,9 @@ class SBPC(models.Model):#SCHOOL BBS PARSE CONFIG
     parseconfig     = models.TextField( null=True );
     
     def to_dict( self ):
+	parse = eval( self.parseconfig )
         return {
+	    'schoollink':parse['locate'],
             'bbsname':self.bbsname,
             'schoolname':self.schoolname,
             'chinesename':self.chinesename,
@@ -67,6 +71,7 @@ class Link(models.Model):
             'board':self.board,
             'title':self.title,
             'titlelink':self.titlelink,
+	    'createtime':timeagofilter.timeago(self.createtime),
         }
 
         

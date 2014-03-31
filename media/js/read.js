@@ -18,7 +18,7 @@
 
 	var url = 'upload_pdf_file/'
 
-    angular.module('reader', [
+    angular.module('bbsparse', [
         'blueimp.fileupload'
     ])
         .config([

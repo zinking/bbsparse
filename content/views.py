@@ -79,10 +79,11 @@ def view_parsing_status(request, template='status.html', extra_context=None):
     context_instance.autoescape=False;
     return rtr(template, context,context_instance);
     
-@cache_page(60 * 45)
-def viewframedcontentV2(request, template='framed_link_content.html', extra_context=None):
+#@cache_page(60 * 45)
+def viewframedcontentV2(request, template='frame.html', extra_context=None):
     context = RequestContext(request);
     linkid = request.GET.get('l', '0');
+    absurl = request.get_full_path()
 
     try:
         linkitem = Link.objects.get( id = int(linkid) );
@@ -95,6 +96,7 @@ def viewframedcontentV2(request, template='framed_link_content.html', extra_cont
         pass;
     context['link'] = linkitem;
     context_instance=RequestContext(request);
+    context['fullurl'] = absurl;
     context_instance.autoescape=False;
     return rtr(template, context,context_instance);
 
