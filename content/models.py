@@ -2,7 +2,7 @@
 from django.db import models
 from django.utils import simplejson
 from django.core  import serializers
-
+from datetime import *
 from content.templatetags import timeagofilter
 
 
@@ -42,6 +42,13 @@ class SBPC(models.Model):#SCHOOL BBS PARSE CONFIG
             'schoolname':self.schoolname,
             'chinesename':self.chinesename,
         }
+
+    def parse_su( self ):
+	self.totalparse += 1
+	self.rank -= 1
+    def parse_fa( self ):
+	self.totalparse += 1
+	self.failedparse += 1
  
 class Link(models.Model):
     
@@ -56,7 +63,6 @@ class Link(models.Model):
     updatetime      = models.DateTimeField( null=False );
     pagecache       = models.TextField( null=True );
     tags            = models.TextField( null=True );
-#    tags            = ListField( models.CharField(max_length=75), null=True );
     
     def get_mblog_str(self):
         from django.core.urlresolvers import reverse;
@@ -64,6 +70,20 @@ class Link(models.Model):
         msg = "[%s] %s %s" %(self.school.chinesename, self.title, link_pattern %(self.id) );
         if self.author != "": msg+= " BY "+self.author;
         return msg;
+
+    @classmethod 
+    def saveorupdate( linkitem , sbpc ):
+	try:
+	    linkobj = Link.objects.get( titlelink=link['titlelink'] );
+	    linkobj.updatetime = datetime.now();
+	    linkobj.save();
+	    return 0
+	except Link.DoesNotExist:
+	    nlinkobj = Link( createtime=datetime.now(), updatetime=datetime.now(), school=sbpc  );
+	    for k,v in link.items(): setattr( nlinkobj, k, v )
+	    nlinkobj.save();
+	    return 1
+
         
     def to_dict( self ):
         return {

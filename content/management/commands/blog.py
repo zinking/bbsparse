@@ -8,6 +8,7 @@ from pageharvest.blog import *;
 
 import datetime;
 import logging
+import time
 
 logger = logging.getLogger('bbs_dig')
 
@@ -44,7 +45,10 @@ class Command(BaseCommand):
 	    try:
 		robot = MblogRobot()
 		for p in posts:
-		    robot.postMsg( p['postcontent'] , p['postlink'])
+		    #robot.postMsg( p['postcontent'] , p['postlink'])
+		    logger.info( p['postcontent'] + p['postlink']+'\n\n\n')
+		    logger.info('POST BLOG SU:%s len:%d'%(p['postcontent'][0:10], len( p['postcontent'])))
+		    #time.sleep(60)
 	    except Exception,e:
 		logger.error('POST BLOG FA:%s'%(e))
 

@@ -2,6 +2,7 @@
 from django.test import SimpleTestCase
 from pageharvest.disqus import *
 from pageharvest.blog import *
+from pageharvest.test_bbsparser import *
 
 class DisqusTestCase( SimpleTestCase):
     def setUp(self):

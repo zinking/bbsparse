@@ -1,68 +1,121 @@
 # coding=utf-8
-from datetime import *;
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 from BeautifulSoup import BeautifulSoup;
 from bsoupxpath import Path;
 from customized_soup import CustomizedSoup;
 from scraper import Scraper;
+from util.spider import *
 
 import htmlentitydefs;
 import HTMLParser
 
-import re,copy,string,logging,time;
-import urllib,urllib2,Cookie;
+import re,copy,string,time;
+from datetime import *
 
-logger = logging.getLogger('bbs_dig')
+import logging as logger
+
 
 from pageharvest.settings import *;
 from content.models       import *;
 
-h = HTMLParser.HTMLParser()
-def report_parse_exceptions( content ):
-    logger.error("Reporting parse problems to administrators" );
-    mail.send_mail(sender="BBS TOP 10<bbstop10@appspot.com>",
-      to="Albert <zinking3@gmail.com>",
-      subject="Parsing Problem Report - BBSTOP10",
-      body=content)
-      
-def unescape(text):
-   """Removes HTML or XML character references 
-      and entities from a text string.
-      keep &amp;, &gt;, &lt; in the source code.
-   from Fredrik Lundh
-   http://effbot.org/zone/re-sub.htm#unescape-html
-   """
-   def fixup(m):
-      text = m.group(0)
-      if text[:2] == "&#":
-         # character reference
-         try:
-            if text[:3] == "&#x":
-               return unichr(int(text[3:-1], 16))
-            else:
-               return unichr(int(text[2:-1]))
-         except ValueError:
-            #print "erreur de valeur"
-            pass
-      else:
-         # named entity
-         try:
-            if text[1:-1] == "amp":
-               text = "&amp;amp;"
-            elif text[1:-1] == "gt":
-               text = "&amp;gt;"
-            elif text[1:-1] == "lt":
-               text = "&amp;lt;"
-            else:
-               #print text[1:-1]
-               text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
-         except KeyError:
-            #print "keyerror"
-            pass
-      return text # leave as is
-   return re.sub("&#?\w+;", fixup, text)
+
+default_pipeline = {
+    1.0:'fetchcontent',
+    2.0:'extractblock',
+    3.0:'scrapestruct',
+    4.0:'fixdomdetail',
+    5.0:'persisresult',
+}
 
 class BBSParser(object):
+
+    def __init__( self ):
+	self.session = Spider().session
+
+    def setupexecontext(self, sbpc):
+	pc = eval( sbpc.parseconfig )
+	p  = default_pipeline 
+	if pc.has_key('pipeline'):
+	    p = p.extend( pc['pipeline'])
+	return { 'sbpc':sbpc, 'pc':pc }
+
+    def executepipeline(self, sbpc):
+	t1 = time.time();
+	context = self.setupexecontext(sbpc)
+	for k in sorted( p.iterkeys()):
+	    try:
+		getattr( self, p[k] )( context )
+	    except Execption,e:
+		logstr = 'PIPE step %.2f %s FA: %s'%( float(k), p[k], e)
+		logger.info( logstr )
+	t2 = time.time()
+        delta = (t2-t1)*1000;
+        sbpc.totalparsetime = sbpc.totalparsetime + delta;
+	logstr = "%s PIPE SU in %d millis" %( pc['bbsname'] , delta )
+	logger.info( logstr )
+        sbpc.lastfresh = datetime.now();
+        sbpc.status = STATUS_NORMAL;
+        sbpc.save();
+
+
+    def fetchcontent(self, context ):
+	from requests.exceptions import *
+	sbpc = context['sbpc']; pc = context['pc']
+	logstr = 'FETCH CONTENT %s '%( sbpc.bbsname )
+	htmlstring = ""
+        try: 
+	    htmlstring = self.session.get( pc['locate'], timeout=2 ).content
+	    sbpc.parse_su()
+        except Timeout, e: 
+	    sbpc.parse_fa()
+	    logstr += "timeout %s" %( pc['bbsname'])
+            logger.error( logstr );
+	    raise e
+        encoding = pc['encoding'] if ( pc.has_key('encoding') )else 'GBK' 
+        htmlstring = unicode(htmlstring, encoding, 'ignore').encode('utf8');
+	context['htmlstring'] = htmlstring
+
+    def extractblock( self, context ):
+	htmlstring = context['htmlstring']
+	reblock = re.compile( context['pc']['re'], re.DOTALL)
+	result  = reblock.search( context['htmlstring'])
+	if result is None : raise Exception('extract block NONE')
+	blockstr= result.group()
+	context['blockstr'] = blockstr
+	
+    def scrapestruct(self, context ):
+	pc = context['pc']
+	rowscrape = pc['dom_row_pattern']
+	blockstr  = context['blockstr']
+	soupdoc   = CustomizedSoup( blockstr )
+	scraper   = Scraper( rowscrape )
+	results   = scraper.match( soupdoc )
+	if( len(results) == 0 ): #TBD scraper need to be imporved
+	    raise Exception("0 ITEMS SCRAPED WARNING")
+	count = min(len(results), 10 )
+	items     = results[0:count]
+	eitems    = map( lambda i:scraper.extract(i), items)
+	context['items'] = eitems
+
+    def fixdomdetail(self, context ):
+	items = context['items']
+	pc    = context['pc']
+	#for item in items: self.fixitem( item, pc )
+	map( lambda i:self.fixitem(i,pc), items)
+
+    def persisresult( self, context ):
+	items = context['items']
+	sbpc  = context['sbpc']
+	newc  = 0
+	for item in items: newc += Link.saveorupdate( item, sbpc )
+	logstr = " %d of %d new links persisted"%( newc, len(items))
+
+	
+	
+
     
     def convertdom2string(self, domlist):
         list_str = u'';
@@ -71,7 +124,6 @@ class BBSParser(object):
         return list_str;
 
     def save_parsed_links(self, linklist , pc, sbpc ):
-        #schoolbbs = get_object(Schoolbbs, 'schoolname =', pc['schoolname']);
         for link in linklist:
             try:
                 linkobj = Link.objects.get( titlelink=link['titlelink'] );
@@ -100,19 +152,12 @@ class BBSParser(object):
         pc = eval( sbpc.parseconfig );
         logger.debug( 'parsing sbpc %s'%(sbpc) ); 
         try: 
-            #htmlstring = urllib2.urlopen( pc['locate'] ).read();
-            url = pc['locate'];
-            headers = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.95 Safari/537.36' };
-            req = urllib2.Request( url , None, headers)
-            htmlstring = urllib2.urlopen(req).read()
-            sbpc.totalparse = sbpc.totalparse + 1;
-            sbpc.rank = sbpc.rank - 1;
+	    htmlstring = self.session.get( pc['locate'] ).content
+	    sbpc.parse_su()
         except Exception, e: 
-            sbpc.failedparse = sbpc.failedparse + 1;
+	    sbpc.parse_fa()
             info = "Failed to open following url %s of school: %s" % (pc['locate'], pc['bbsname']);
             logger.error( info );
-            #print info;
-            sbpc.save();
             return 0;
         encoding = pc['encoding'] if ( pc.has_key('encoding') )else 'GBK' 
         htmlstring = unicode(htmlstring, encoding, 'ignore').encode('utf8');

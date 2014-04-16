@@ -7,21 +7,17 @@ import base64
 import binascii
  
 import rsa
-import requests
 import time
  
 import logging
+
+from spider import Spider
 #logging.basicConfig(level=logging.DEBUG)
  
 class SinaWeibo(object): 
     def __init__( self ):
 	self.WBCLIENT = 'ssologin.js(v1.4.5)'
-	user_agent = (
-	    'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/536.11 (KHTML, like Gecko) '
-	    'Chrome/20.0.1132.57 Safari/536.11'
-	)
-	self.session = requests.session()
-	self.session.headers['User-Agent'] = user_agent
+	self.session = Spider().session
 
 
     def encrypt_passwd( self, passwd, pubkey, servertime, nonce):
