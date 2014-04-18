@@ -31,11 +31,11 @@ class Command(BaseCommand):
         try:
             qschool = SBPC.objects.get( bbsname = bn );
             links = Link.objects.filter( school = qschool );
-            for link in links:
+            for link in links[0:10]:
                 link.delete()
         except Exception,e:
             raise e;
-        print 'config updated successfully ', bn;
+        print '10 links deleted successfully ', bn;
 
 
     def handle(self,  **options):

@@ -71,16 +71,16 @@ class Link(models.Model):
         if self.author != "": msg+= " BY "+self.author;
         return msg;
 
-    @classmethod 
+    @staticmethod 
     def saveorupdate( linkitem , sbpc ):
 	try:
-	    linkobj = Link.objects.get( titlelink=link['titlelink'] );
+	    linkobj = Link.objects.get( titlelink=linkitem['titlelink'] );
 	    linkobj.updatetime = datetime.now();
 	    linkobj.save();
 	    return 0
 	except Link.DoesNotExist:
 	    nlinkobj = Link( createtime=datetime.now(), updatetime=datetime.now(), school=sbpc  );
-	    for k,v in link.items(): setattr( nlinkobj, k, v )
+	    for k,v in linkitem.items(): setattr( nlinkobj, k, v )
 	    nlinkobj.save();
 	    return 1
 
@@ -88,7 +88,7 @@ class Link(models.Model):
     def to_dict( self ):
         return {
             'id':self.id,
-            'board':self.board,
+            'board':self.board[0:5],
             'title':self.title,
             'titlelink':self.titlelink,
 	    'createtime':timeagofilter.timeago(self.createtime),

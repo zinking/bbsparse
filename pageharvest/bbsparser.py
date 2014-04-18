@@ -7,19 +7,22 @@ from BeautifulSoup import BeautifulSoup;
 from bsoupxpath import Path;
 from customized_soup import CustomizedSoup;
 from scraper import Scraper;
-from util.spider import *
+from util.spider import Spider
 
 import htmlentitydefs;
 import HTMLParser
 
-import re,copy,string,time;
-from datetime import *
+import re,copy,string;
+from datetime import datetime
+import cPickle
 
 import logging as logger
+logger.basicConfig(level=logger.DEBUG)
 
 
 from pageharvest.settings import *;
 from content.models       import *;
+import time
 
 
 default_pipeline = {
@@ -32,45 +35,79 @@ default_pipeline = {
 
 class BBSParser(object):
 
-    def __init__( self ):
+    def __init__( self , sbpc, mode = 'normal' ): 
 	self.session = Spider().session
+	self.mode    = mode 
+	self.sbpc    = sbpc
+	self.htmlp   = HTMLParser.HTMLParser()
 
-    def setupexecontext(self, sbpc):
-	pc = eval( sbpc.parseconfig )
+    def cleanuphtmltext(self,text):
+	t1 = self.htmlp.unescape( text )
+	return re.sub('<[^<]+?>', '', t1)
+	
+    def setupexecontext(self):
+	pc = eval( self.sbpc.parseconfig )
 	p  = default_pipeline 
+	self.logstr = self.sbpc.bbsname + ' '
 	if pc.has_key('pipeline'):
-	    p = p.extend( pc['pipeline'])
-	return { 'sbpc':sbpc, 'pc':pc }
+	    p.update( pc['pipeline'])
+	return { 'pc':pc , 'p':p}
 
-    def executepipeline(self, sbpc):
+    def persistscontext(self, context):
+	with open("persistscontext","w") as file:
+	    file.write(cPickle.dumps(context))
+    
+    def loadpersistfile(self):
+	with open("persistscontext","r") as file:
+	    data = file.read()
+	    return cPickle.loads(data)
+	
+    def executepipelinestep(self, step , trace = False ):
+	import pdb
+	if self.mode != 'debug' : return
+	context = self.loadpersistfile()
+	p = context['p']; 
+	if( trace ): pdb.set_trace()
+	getattr(self, p[step])(context)
+
+    def executepipeline(self):
 	t1 = time.time();
-	context = self.setupexecontext(sbpc)
+	context = self.setupexecontext()
+	p = context['p']; pc=context['pc']
 	for k in sorted( p.iterkeys()):
 	    try:
 		getattr( self, p[k] )( context )
-	    except Execption,e:
-		logstr = 'PIPE step %.2f %s FA: %s'%( float(k), p[k], e)
+		#logstr = self.logstr + 'PIPE step %.2f %s EXE'%( float(k), p[k])
+		#if( self.mode == 'debug' ): logger.debug(logstr)
+	    except Exception,e:
+		logstr = self.logstr + 'PIPE step %.2f %s FA: %s'%( float(k), p[k], e)
 		logger.info( logstr )
+		context['result'] = 'FA'
+		context['error'] = logstr
+		if( self.mode =='debug') : self.persistscontext(context )
+		return context
 	t2 = time.time()
         delta = (t2-t1)*1000;
-        sbpc.totalparsetime = sbpc.totalparsetime + delta;
-	logstr = "%s PIPE SU in %d millis" %( pc['bbsname'] , delta )
+        self.sbpc.totalparsetime = self.sbpc.totalparsetime + delta;
+	logstr = self.logstr + "%s PIPE SU in %d millis" %( pc['bbsname'] , delta )
 	logger.info( logstr )
-        sbpc.lastfresh = datetime.now();
-        sbpc.status = STATUS_NORMAL;
-        sbpc.save();
+        self.sbpc.lastfresh = datetime.now();
+        self.sbpc.status = STATUS_NORMAL;
+        self.sbpc.save();
+	if( self.mode == 'debug' ) : self.persistscontext(context)
+	return context
 
 
     def fetchcontent(self, context ):
 	from requests.exceptions import *
-	sbpc = context['sbpc']; pc = context['pc']
-	logstr = 'FETCH CONTENT %s '%( sbpc.bbsname )
+	pc = context['pc']
 	htmlstring = ""
         try: 
 	    htmlstring = self.session.get( pc['locate'], timeout=2 ).content
-	    sbpc.parse_su()
+	    self.sbpc.parse_su()
         except Timeout, e: 
-	    sbpc.parse_fa()
+	    logstr = self.logstr + 'FETCHCONTENT %s '%( self.sbpc.bbsname )
+	    self.sbpc.parse_fa()
 	    logstr += "timeout %s" %( pc['bbsname'])
             logger.error( logstr );
 	    raise e
@@ -81,9 +118,12 @@ class BBSParser(object):
     def extractblock( self, context ):
 	htmlstring = context['htmlstring']
 	reblock = re.compile( context['pc']['re'], re.DOTALL)
-	result  = reblock.search( context['htmlstring'])
-	if result is None : raise Exception('extract block NONE')
-	blockstr= result.group()
+	resultiter  = reblock.finditer( context['htmlstring'])
+	resultlist  = list(resultiter)
+	if len( resultlist ) == 0: raise Exception('extract block NONE')
+	#blockstr= result.group()
+	resultstrlist = map( lambda x:x.group(),resultlist )
+	blockstr = reduce( lambda x,y:x+y, resultstrlist )
 	context['blockstr'] = blockstr
 	
     def scrapestruct(self, context ):
@@ -100,6 +140,19 @@ class BBSParser(object):
 	eitems    = map( lambda i:scraper.extract(i), items)
 	context['items'] = eitems
 
+    def regularparse(self, context ):
+	pc = context['pc']
+	repat = re.compile(pc['re_row'], re.DOTALL|re.U|re.I)
+	blockstr  = context['blockstr']
+	resultiter   =  repat.finditer( blockstr ) 
+	results = list( resultiter )
+	if( len(results) == 0 ): #TBD scraper need to be imporved
+	    raise Exception("0 ITEMS SCRAPED WARNING")
+	count = min(len(results), 10 )
+	items     = results[0:count]
+	eitems    = map( lambda i:i.groupdict(), items)
+	context['items'] = eitems
+
     def fixdomdetail(self, context ):
 	items = context['items']
 	pc    = context['pc']
@@ -107,117 +160,25 @@ class BBSParser(object):
 	map( lambda i:self.fixitem(i,pc), items)
 
     def persisresult( self, context ):
-	items = context['items']
-	sbpc  = context['sbpc']
-	newc  = 0
-	for item in items: newc += Link.saveorupdate( item, sbpc )
-	logstr = " %d of %d new links persisted"%( newc, len(items))
+	items = context['items']; newc  = 0
+	for item in items: newc += Link.saveorupdate( item, self.sbpc )
+	logstr = self.logstr + " %d of %d new links persisted"%( newc, len(items))
+	logger.info( logstr )
 
-	
-	
-
-    
-    def convertdom2string(self, domlist):
-        list_str = u'';
-        for i in range(len(domlist)):
-            list_str += unicode(domlist[i]);
-        return list_str;
-
-    def save_parsed_links(self, linklist , pc, sbpc ):
-        for link in linklist:
-            try:
-                linkobj = Link.objects.get( titlelink=link['titlelink'] );
-                linkobj.updatetime = datetime.now();
-                linkobj.save();
-                info = 'existing links updated %s' %(linkobj)
-                logger.debug( info );
-            except Link.DoesNotExist:
-                    nlinkobj = Link( createtime=datetime.now(), updatetime=datetime.now(), school=sbpc  );
-                    for k,v in link.items():
-                        setattr( nlinkobj, k, v )
-                    nlinkobj.save();
-                    info = 'new links fetched %s' %(nlinkobj)
-                    logger.debug( info );
-                    sbpc.lastrefresh = datetime.now();
-                    sbpc.save();
-            except Exception,e:
-                info = 'CAUGHT EXCEPTION %s'%( e )
-                logger.error( info );
-
-    """
-    PARSING BBS USING PREDEFINED PARSING CONFIGURATIONS
-    """
-    def parsebbs(self, sbpc ):#parsepc
-        t1 = time.time();
-        pc = eval( sbpc.parseconfig );
-        logger.debug( 'parsing sbpc %s'%(sbpc) ); 
-        try: 
-	    htmlstring = self.session.get( pc['locate'] ).content
-	    sbpc.parse_su()
-        except Exception, e: 
-	    sbpc.parse_fa()
-            info = "Failed to open following url %s of school: %s" % (pc['locate'], pc['bbsname']);
-            logger.error( info );
-            return 0;
-        encoding = pc['encoding'] if ( pc.has_key('encoding') )else 'GBK' 
-        htmlstring = unicode(htmlstring, encoding, 'ignore').encode('utf8');
-        try:
-            if( pc['type'] == PARSE_USE_XPATH ):
-                linklist = self.parsebbsbyXpath(pc,htmlstring);           
-            else:
-                linklist = self.parsebbsbyRegularExpression(pc,htmlstring);
-        except Exception, e:
-            info = "Exception:SITE changed; schoolname= %s :%s"%( pc['bbsname'],e )
-            logger.error( info );
-            sbpc.status = STATUS_EXCEPTION;
-            sbpc.save();
-            return 0
-        t2 = time.time();
-            
-        self.save_parsed_links(linklist, pc, sbpc );
-        delta = (t2-t1)*1000;
-        sbpc.totalparsetime = sbpc.totalparsetime + delta;
-        logger.debug("Successfully parsing school:%s costing %d milliseconds;" % (pc['bbsname'], delta ));
-        sbpc.lastfresh = datetime.now();
-        sbpc.status = STATUS_NORMAL;
-        sbpc.save();
-        return delta;
-
-
-    def parsebbsbyXpath(self, pc, htmlstring):
-        logger.debug( 'parsing using XPATH' );
-        try:
-            dom = BeautifulSoup(htmlstring);
-        except Exception, e:
-            info = "Xpath parsing exception school:%s %s"%( pc['bbsname'],e);
-            logger.error( info );
-            raise Exception(info);
-        contentpath = Path(pc['xpath']);
-        domblock = contentpath.apply(dom);
-        blockstring = self.convertdom2string(domblock) ;
-
-        return self.parsebbsDomDetail(blockstring, pc);
-    
-    def parsebbsbyRegularExpression(self, pc, htmlstring):
-        logger.debug( 'parsing using regular expression' );
-        try:
-            re_block = re.compile( pc['re'], re.DOTALL);
-            #print pc['re']
-            #print len( htmlstring )
-            blockstring = re_block.search(htmlstring).group();
-            #logger.debug( blockstring );
-        except Exception, e:
-            info = "RE parser exception school %s %s"%( pc['bbsname'],e);
-            logger.error( info ); 
-            raise Exception(info);
-        return self.parsebbsDomDetail(blockstring, pc);
-    
-    #TBD finish this in a more reasonable way
+   
     def fixitem(self, item , pc):
         orginal_link = item['titlelink'];
         item['titlelink'] = pc['root'] + item['titlelink'];
+	if not isinstance( item['title'], basestring ):
+	    titlelist = map( lambda x:x.string, item['title'] )
+	    titletext = "".join( titlelist )
+	    item['title'] = self.cleanuphtmltext( titletext ) 
         if ( 'additional' in pc.keys() and pc['additional'] == 'special' ):
             item['titlelink'] = pc['root'] %( item['board'],orginal_link);
+
+	if ( 'additional' in pc.keys() and pc['additional'] == 'special2' ):
+            item['titlelink'] = pc['root'] %( item['boardlink'],orginal_link);
+
         if ('re_board' in pc.keys()):
             re_board = re.compile( pc[ 're_board' ], re.DOTALL);
             titlegroup = re_board.search(item['title']);
@@ -228,36 +189,5 @@ class BBSParser(object):
             match_group = re_board_from_titlelink.search(item['titlelink']);
             item['board'] = match_group.group('board')
         
-            
-    #return links list
-    def parsebbsDomDetail(self, dom_block_str , pc):     
-        try:
-            dom_row_pattern = pc['dom_row_pattern']; 
-            #make dom block string become dom again, 
-            #Unreasonable for: string->dom->blockdom->blockstring->blockdom->rowdom->rowstring need to be revised
-            doc = CustomizedSoup(dom_block_str);        
-            scraper = Scraper(dom_row_pattern);         #setup scraper to scrape row string
-            ret = scraper.match(doc);
-            if len(ret) == 0:
-                raise Exception("0 RESULTS RETURNED FROM ROW PATTERN, ROW PATTERN BROKE");
-            retlength = min( len(ret),10);
-            ret = ret[0:retlength];
-            parsed_result = []; 
-            info = "totally %d items parsed for school %s " %( len(ret), pc['locate'] );
-            logger.info( info );
-            for item in ret:
-                value = scraper.extract(item); 
-                value['titlelink'] = h.unescape( value['titlelink'] );
-                self.fixitem(value, pc);
-                #value['title'] = unescape( value['title'] );#SAFE TITLE
-                parsed_result.append(value);
-        except Exception, e: 
-            info = "Dom detail exception: school %s %s \n"%( pc['locate'], e );
-            info += "LENGHT OF DOCSTR %d"%(len(dom_block_str))
-            logger.error( info ); 
-            raise Exception(info);
-        
-        #logger.debug( parsed_result ); 
-        return  parsed_result;
-        
+       
         
