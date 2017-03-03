@@ -1,0 +1,11 @@
+Django==1.5
+disqus-python==0.4.2
+django-social-auth==0.7.28
+html5lib==0.999
+httplib2==0.9.2
+oauth2==1.9.0.post1
+pyserial==2.6
+python-memcached==1.57
+python-openid==2.2.5
+requests==2.2.1
+simplejson==3.8.1
