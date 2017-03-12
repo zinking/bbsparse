@@ -7,5 +7,6 @@ oauth2==1.9.0.post1
 pyserial==2.6
 python-memcached==1.57
 python-openid==2.2.5
-requests==2.2.1
+gevent
+requests==2.6.0
 simplejson==3.8.1
